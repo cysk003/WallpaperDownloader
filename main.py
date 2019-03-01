@@ -1,11 +1,17 @@
+import io
+import json
 import os
+import sys
+import urllib.parse as parser
 
 import requests
 from requests.adapters import HTTPAdapter
-import json
-import urllib.parse as parser
 
 import params
+
+# 改变标准输出的默认编码
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
+
 
 save_path = params.save_path
 base_url = params.base_url
@@ -24,6 +30,7 @@ def get_max_num_of_wallpapers(path):
     for pic_name in os.listdir(path):
         print(pic_name)
         pass
+
 
 def get_categories():
     params = {
@@ -49,6 +56,7 @@ def get_apps_by_tags_from_category(catagory, tags, start=0, count=100):
         print(repr(e))
         return None
 
+
 def get_url_content(url):
     return requests.get(url).content
 
@@ -68,9 +76,12 @@ if __name__ == "__main__":
             if not os.path.exists(p):
                 os.makedirs(p)
             path = os.path.join(p, str(id) + '.jpg')
-            with open(path, 'wb+') as f:
-                f.write(content)
-                f.close()
-            print('已下载[' + id +']至' + path)
+            if os.path.exists(path):
+                print('[' + path + '已存在')
+            else:
+                with open(path, 'wb+') as f:
+                    f.write(content)
+                    f.close()
+                print('已下载[' + id + ']至' + path)
         start += page_size
         pics = get_apps_by_tags_from_category(6, tags, start, page_size)
