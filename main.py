@@ -43,14 +43,34 @@ def get_apps_by_tags_from_category(catagory, tags, start=0, count=100):
         'count': count,
         'tags': parser.quote(tags)
     }
-    return session.get(base_url, params=params).json()['data']
+    try:
+        return session.get(base_url, params=params).json()['data']
+    except Exception as e:
+        print(repr(e))
+        return None
+
+def get_url_content(url):
+    return requests.get(url).content
 
 
 if __name__ == "__main__":
-    # catagories = get_catagories()['data']
-    # for data in catagories:
-        # data['name']
-    pics = get_apps_by_tags_from_category(6, '清纯', 0, 10)
-    for pic in pics:
-        print(pic)
-    pass
+    tags = '清纯'
+    start = 0
+    page_size = 50
+
+    pics = get_apps_by_tags_from_category(6, tags, start, page_size)
+    while pics is not None:
+        for pic in pics:
+            id = pic['id']
+            url = pic['url']
+            content = get_url_content(url)
+            p = os.path.join(save_path, tags,)
+            if not os.path.exists(p):
+                os.makedirs(p)
+            path = os.path.join(p, str(id) + '.jpg')
+            with open(path, 'wb+') as f:
+                f.write(content)
+                f.close()
+            print('已下载[' + id +']至' + path)
+        start += page_size
+        pics = get_apps_by_tags_from_category(6, tags, start, page_size)
