@@ -69,13 +69,19 @@ def get_apps_by_category(catagory, start=0, count=100):
 
 
 def get_url_content(url):
-    return session.get(url).content
+    try:
+        return session.get(url).content
+    except Exception as e:
+        print(repr(e))
+        return None
 
 
 if __name__ == "__main__":
     start = 0
     page_size = 50
     p = os.path.join(save_path)
+    if not os.path.exists(p):
+                os.makedirs(p)
     pics = get_apps_by_category(6, start, page_size)
     while pics is not None:
         for pic in pics:
@@ -84,11 +90,9 @@ if __name__ == "__main__":
             if os.path.exists(path):
                 print('[' + path + '已存在')
                 continue
-            url = pic['url']
+            url = pic['url_mid']
             content = get_url_content(url)
-            if not os.path.exists(p):
-                os.makedirs(p)
-            else:
+            if content:
                 with open(path, 'wb+') as f:
                     f.write(content)
                     f.close()
