@@ -9,10 +9,6 @@ from requests.adapters import HTTPAdapter
 
 import params
 
-# 改变标准输出的默认编码
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
-
-
 save_path = params.save_path
 base_url = params.base_url
 tags = params.tags
@@ -57,16 +53,30 @@ def get_apps_by_tags_from_category(catagory, tags, start=0, count=100):
         return None
 
 
+def get_apps_by_category(catagory, start=0, count=100):
+    params = {
+        'c': 'WallPaper',
+        'a': 'getAppsByCategory',
+        'cid': int(catagory),
+        'start': start,
+        'count': count
+    }
+    try:
+        return session.get(base_url, params=params).json()['data']
+    except Exception as e:
+        print(repr(e))
+        return None
+
+
 def get_url_content(url):
     return session.get(url).content
 
 
 if __name__ == "__main__":
-    tags = '清纯'
     start = 0
     page_size = 50
-    p = os.path.join(save_path, tags,)
-    pics = get_apps_by_tags_from_category(6, tags, start, page_size)
+    p = os.path.join(save_path)
+    pics = get_apps_by_category(6, start, page_size)
     while pics is not None:
         for pic in pics:
             id = pic['id']
@@ -84,4 +94,4 @@ if __name__ == "__main__":
                     f.close()
                 print('已下载[' + id + ']至' + path)
         start += page_size
-        pics = get_apps_by_tags_from_category(6, tags, start, page_size)
+        pics = get_apps_by_category(6, start, page_size)
