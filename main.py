@@ -58,26 +58,26 @@ def get_apps_by_tags_from_category(catagory, tags, start=0, count=100):
 
 
 def get_url_content(url):
-    return requests.get(url).content
+    return session.get(url).content
 
 
 if __name__ == "__main__":
     tags = '清纯'
     start = 0
     page_size = 50
-
+    p = os.path.join(save_path, tags,)
     pics = get_apps_by_tags_from_category(6, tags, start, page_size)
     while pics is not None:
         for pic in pics:
             id = pic['id']
-            url = pic['url']
-            content = get_url_content(url)
-            p = os.path.join(save_path, tags,)
-            if not os.path.exists(p):
-                os.makedirs(p)
             path = os.path.join(p, str(id) + '.jpg')
             if os.path.exists(path):
                 print('[' + path + '已存在')
+                continue
+            url = pic['url']
+            content = get_url_content(url)
+            if not os.path.exists(p):
+                os.makedirs(p)
             else:
                 with open(path, 'wb+') as f:
                     f.write(content)
