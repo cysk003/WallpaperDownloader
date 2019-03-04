@@ -88,7 +88,7 @@ def get_url_content(url, timeout):
 
 
 if __name__ == "__main__":
-    category = 6 # 美女
+    category = 6  # 美女
     start = 0
     page_size = 10
     p = os.path.join(save_path)
@@ -98,8 +98,12 @@ if __name__ == "__main__":
     total = response['total']
     while response is not None and start <= total:
         for pic in response['data']:
+            create_time: str = pic['create_time']
+            if create_time < '2014':
+                continue
             id = pic['id']
-            path = os.path.join(p, str(id) + '.jpg')
+            path = os.path.join(p, str(id) + '_' +
+                                create_time.split(' ')[0].replace('-', '_') + '.jpg')
             if os.path.exists(path):
                 print('[' + path + '已存在')
                 continue
@@ -129,5 +133,4 @@ if __name__ == "__main__":
                 print('获取[' + id + ']失败')
         start += page_size
         response = get_apps_by_category(category, start, page_size)
-        print('start:' + str(start) + ', total:' + str(total))
     print('下载完成！')
