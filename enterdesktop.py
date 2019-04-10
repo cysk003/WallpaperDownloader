@@ -104,17 +104,27 @@ class EnterDesktop:
             return BeautifulSoup(text, 'html.parser')
 
     def start(self):
-        arr = [PicType.DALU, PicType.RIHAN, PicType.QINGCHUN, PicType.KEAI]
+        arr = [PicType.DALU, PicType.RIHAN, PicType.QINGCHUN, PicType.GANGTAI, PicType.KEAI, PicType.OUMEI]
         for pic_type in arr:
             self.logger.info("开始下载:" + pic_type)
             self.download_pictures(pic_type)
 
 
 class PicType:
+    # 大陆
     DALU = 'dalumeinv'
+    # 日韩
     RIHAN = 'rihanmeinv'
+    # 港台
+    GANGTAI = 'gangtaimennv'
+    # 清纯
     QINGCHUN = 'qingchunmeinv'
+    # 动漫
+    DONGMAN = 'dongmanmeinv'
+    # 可爱
     KEAI = 'keaimeinv'
+    # 欧美
+    OUMEI = 'oumeimeinv'
 
 
 if __name__ == '__main__':
