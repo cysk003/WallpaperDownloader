@@ -68,12 +68,15 @@ class EnterDesktop:
                         href = collection['href']
                         soup = self.__parse_html__(href)
                         for pic in self.__get_pics_from_collection__(soup):
-                            path = os.path.join(self.save_path, title) if not self.ignore_title else self.save_path
-                            if not os.path.exists(path):
-                                os.makedirs(path)
                             if not self.ignore_title:
+                                path = os.path.join(self.save_path, pic_type, title)
+                                if not os.path.exists(path):
+                                    os.makedirs(path)
                                 pic_path = os.path.join(path, pic['name'])
                             else:
+                                path = os.path.join(self.save_path, pic_type)
+                                if not os.path.exists(path):
+                                    os.makedirs(path)
                                 pic_path = os.path.join(path, title + '_' + pic['name'])
                             self.__download__(pic_path, pic['src'], href)
             else:
