@@ -79,10 +79,38 @@ class EnterDesktop:
                                     os.makedirs(path)
                                 pic_path = os.path.join(path, title + '_' + pic['name'])
                             self.__download__(pic_path, pic['src'], href)
+                else:
+                    self.logger.warning('第[' + str(num) + ']页为空，跳出循环')
+                    break
             else:
                 self.logger.warning('在获取' + pic_url + '时出错，跳出循环')
                 break
             num += 1
+
+    def download_tuku(self, pic_type):
+        base_pic_url = self.base_url + '/' + pic_type + '/'
+        num = 1
+        while True:
+            pic_url = base_pic_url + str(num) + '.html'
+            soup = self.__parse_html__(pic_url)
+            if soup:
+                self.logger.info('开始下载:' + pic_type + ',第[' + str(num) + ']页')
+                dds = soup.find_all('dd')
+                if dds:
+                    for dd in dds:
+                        img = dd.find_all('img')[0]
+                        img_href = img['src'].replace('edpic_360_360', 'edpic_source')
+                        img_title = img['title'] + img_href.split('/')[-1]
+                        parent_path = os.path.join(self.save_path, pic_type)
+                        if not os.path.exists(parent_path):
+                            os.makedirs(parent_path)
+                        self.__download__(os.path.join(parent_path, img_title), img_href, pic_url)
+                else:
+                    return []
+            else:
+                self.logger.warning('在获取' + pic_url + '时出错，跳出循环')
+                break
+        num += 1
 
     def __get_pics_from_collection__(self, soup):
         if soup:
@@ -95,7 +123,8 @@ class EnterDesktop:
     def __get_collections__(self, soup):
         dds = soup.find_all('dd')
         if dds:
-            return [{'title': dd.find_all('img')[0]['title'].strip(), 'href': dd.find_all('a')[0]['href']} for dd in dds]
+            return [{'title': dd.find_all('img')[0]['title'].strip(), 'href': dd.find_all('a')[0]['href']} for dd in
+                    dds]
         else:
             return []
 
@@ -106,11 +135,18 @@ class EnterDesktop:
         else:
             return BeautifulSoup(text, 'html.parser')
 
-    def start(self):
-        arr = [PicType.DALU, PicType.RIHAN, PicType.QINGCHUN, PicType.GANGTAI, PicType.KEAI, PicType.OUMEI]
-        for pic_type in arr:
-            self.logger.info("开始下载:" + pic_type)
-            self.download_pictures(pic_type)
+    def start(self, tp='wallpaper'):
+        if tp == 'wallpaper':
+            self.base_url = 'https://mm.enterdesk.com'
+            # PicType.DALU, PicType.RIHAN,
+            arr = [PicType.QINGCHUN, PicType.GANGTAI, PicType.KEAI, PicType.OUMEI]
+            for pic_type in arr:
+                self.logger.info("开始下载:" + pic_type)
+                self.download_pictures(pic_type)
+        else:
+            self.base_url = 'https://tu.enterdesk.com'
+            self.logger.info("开始下载:图库")
+            self.download_tuku('meinv')
 
 
 class PicType:
@@ -130,14 +166,15 @@ class PicType:
     OUMEI = 'oumeimeinv'
 
 
-def escape(input):
+def escape(input_str):
     char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
-    input = input.strip()
+    input_str = input_str.strip()
     for char in char_arr:
-        input = input.replace(char, '_')
-    return input
+        input_str = input_str.replace(char, '_')
+    return input_str
 
 
 if __name__ == '__main__':
     EnterDesktop = EnterDesktop(ignore_title=True)
     EnterDesktop.start()
+    EnterDesktop.start(tp='tuku')
