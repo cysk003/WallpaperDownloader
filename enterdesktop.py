@@ -63,7 +63,7 @@ class EnterDesktop:
                 collections = self.__get_collections__(soup)
                 if collections:
                     for collection in collections:
-                        title = collection['title']
+                        title = escape(collection['title'])
                         self.logger.info('开始下载:' + title)
                         href = collection['href']
                         soup = self.__parse_html__(href)
@@ -95,7 +95,7 @@ class EnterDesktop:
     def __get_collections__(self, soup):
         dds = soup.find_all('dd')
         if dds:
-            return [{'title': dd.find_all('img')[0]['title'], 'href': dd.find_all('a')[0]['href']} for dd in dds]
+            return [{'title': dd.find_all('img')[0]['title'].strip(), 'href': dd.find_all('a')[0]['href']} for dd in dds]
         else:
             return []
 
@@ -128,6 +128,14 @@ class PicType:
     KEAI = 'keaimeinv'
     # 欧美
     OUMEI = 'oumeimeinv'
+
+
+def escape(input):
+    char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
+    input = input.strip()
+    for char in char_arr:
+        input = input.replace(char, '_')
+    return input
 
 
 if __name__ == '__main__':
