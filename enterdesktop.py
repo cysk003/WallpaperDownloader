@@ -138,8 +138,7 @@ class EnterDesktop:
     def start(self, tp='wallpaper'):
         if tp == 'wallpaper':
             self.base_url = 'https://mm.enterdesk.com'
-            # PicType.DALU, PicType.RIHAN,
-            arr = [PicType.QINGCHUN, PicType.GANGTAI, PicType.KEAI, PicType.OUMEI]
+            arr = [PicType.DALU, PicType.RIHAN, PicType.QINGCHUN, PicType.KEAI, PicType.OUMEI]
             for pic_type in arr:
                 self.logger.info("开始下载:" + pic_type)
                 self.download_pictures(pic_type)
