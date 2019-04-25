@@ -110,7 +110,7 @@ class EnterDesktop:
             else:
                 self.logger.warning('在获取' + pic_url + '时出错，跳出循环')
                 break
-        num += 1
+            num += 1
 
     def __get_pics_from_collection__(self, soup):
         if soup:
