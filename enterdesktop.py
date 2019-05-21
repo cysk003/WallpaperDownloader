@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 """回车壁纸下载"""
 from bs4 import BeautifulSoup
 import os
@@ -17,7 +18,7 @@ class EnterDesktop:
         self.session.mount('http://', HTTPAdapter(max_retries=2))
         self.session.mount('https://', HTTPAdapter(max_retries=2))
         self.base_url = 'https://mm.enterdesk.com'
-        self.save_path = 'D:\\回车壁纸'
+        self.save_path = '/home/zodiac/Data/Wallpaper/BeautifullGirls'
         self.ignore_title = ignore_title
         self.pool = ThreadPool(4)
 
@@ -69,15 +70,16 @@ class EnterDesktop:
                         soup = self.__parse_html__(href)
                         for pic in self.__get_pics_from_collection__(soup):
                             if not self.ignore_title:
-                                path = os.path.join(self.save_path, pic_type, title)
+                                path = os.path.join(self.save_path, title)
                                 if not os.path.exists(path):
                                     os.makedirs(path)
                                 pic_path = os.path.join(path, pic['name'])
                             else:
-                                path = os.path.join(self.save_path, pic_type)
+                                path = self.save_path
                                 if not os.path.exists(path):
                                     os.makedirs(path)
-                                pic_path = os.path.join(path, title + '_' + pic['name'])
+                                pic_path = os.path.join(
+                                    path, pic_type + '_' + title + '_' + pic['name'])
                             self.__download__(pic_path, pic['src'], href)
                 else:
                     self.logger.warning('第[' + str(num) + ']页为空，跳出循环')
@@ -99,12 +101,14 @@ class EnterDesktop:
                 if dds:
                     for dd in dds:
                         img = dd.find_all('img')[0]
-                        img_href = img['src'].replace('edpic_360_360', 'edpic_source')
+                        img_href = img['src'].replace(
+                            'edpic_360_360', 'edpic_source')
                         img_title = img['title'] + img_href.split('/')[-1]
                         parent_path = os.path.join(self.save_path, pic_type)
                         if not os.path.exists(parent_path):
                             os.makedirs(parent_path)
-                        self.__download__(os.path.join(parent_path, img_title), img_href, pic_url)
+                        self.__download__(os.path.join(
+                            parent_path, img_title), img_href, pic_url)
                 else:
                     return []
             else:
@@ -138,7 +142,8 @@ class EnterDesktop:
     def start(self, tp='wallpaper'):
         if tp == 'wallpaper':
             self.base_url = 'https://mm.enterdesk.com'
-            arr = [PicType.DALU, PicType.RIHAN, PicType.QINGCHUN, PicType.KEAI, PicType.OUMEI]
+            arr = [PicType.DALU, PicType.RIHAN,
+                   PicType.QINGCHUN, PicType.KEAI, PicType.OUMEI]
             for pic_type in arr:
                 self.logger.info("开始下载:" + pic_type)
                 self.download_pictures(pic_type)
