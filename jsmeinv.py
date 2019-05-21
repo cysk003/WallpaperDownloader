@@ -82,7 +82,7 @@ def get_pic(pic_url, title):
     return download(pic_content, pic_save_path)
 
 
-sub_url = '/meinv/niebiao/2_'
+sub_url = '/meinv/niebiao/1_'
 
 num1 = 1
 while True:
