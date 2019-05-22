@@ -49,7 +49,7 @@ def download(content, path):
 
 
 def escape(input_str):
-    esp = """/\:*"<>|?"""
+    esp = """/\\:*"<>|?"""
     for x in esp:
         input_str = input_str.replace(x, '')
     return input_str
@@ -82,7 +82,15 @@ def get_pic(pic_url, title):
     return download(pic_content, pic_save_path)
 
 
-sub_url = '/meinv/niebiao/1_'
+# 1 性感美女
+# 2 青春靓丽
+# 5 街拍自拍
+# 9 内衣丝袜
+# 11 明星秀女
+# 18 精品套图
+# 24 高清套图
+# 25 无圣光
+sub_url = '/meinv/niebiao/25_'
 
 num1 = 1
 while True:

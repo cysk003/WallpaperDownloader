@@ -9,6 +9,10 @@ session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.meitulu.com/'
+# guochan
+# gangtai
+# rihan
+# xihuan
 url_category = base_url + 'guochan/'
 save_path = 'D:\\图片\\美图录'
 
