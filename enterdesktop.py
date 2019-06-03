@@ -44,7 +44,8 @@ class EnterDesktop:
 
     def __get_url_content__(self, url, headers=None):
         try:
-            content = self.__session__.get(url, headers=headers, timeout=3).content
+            content = self.__session__.get(
+                url, headers=headers, timeout=3).content
             return content
         except Exception as e:
             self.logger.warning('在获取:' + url + '时出错')
@@ -124,7 +125,8 @@ class EnterDesktop:
                         img_href = img['src'].replace(
                             'edpic_360_360', 'edpic_source')
                         img_title = img['title'] + img_href.split('/')[-1]
-                        parent_path = os.path.join(self.__save_path__, pic_type)
+                        parent_path = os.path.join(
+                            self.__save_path__, pic_type)
                         if not os.path.exists(parent_path):
                             os.makedirs(parent_path)
                         self.__download__(os.path.join(
@@ -178,7 +180,8 @@ class EnterDesktopUi:
         self.root = Tk()
         self.root.geometry('250x200')
         self.root.title('回车壁纸下载器 --by Zodiac')
-        self.__categories_list__ = self.__downloader__.__settings__.get_setting('types')
+        self.__categories_list__ = self.__downloader__.__settings__.get_setting(
+            'types')
         self.__category__ = None
 
     def get_categories(self):
@@ -246,6 +249,10 @@ class EnterDesktopUi:
         self.root.mainloop()
 
 
-if __name__ == '__main__':
+def main():
     ui = EnterDesktopUi()
     ui.start()
+
+
+if __name__ == '__main__':
+    main()

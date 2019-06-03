@@ -47,7 +47,8 @@ class WallpaperDownloader:
             'tags': parser.quote(tags)
         }
         try:
-            response = self.__session__.get(self.__base_url__, params=params, timeout=10).json()
+            response = self.__session__.get(
+                self.__base_url__, params=params, timeout=10).json()
             total = int(response['total'])
             return {
                 'total': total,
@@ -66,7 +67,8 @@ class WallpaperDownloader:
             'count': count
         }
         try:
-            response = self.__session__.get(self.__base_url__, params=params, timeout=10).json()
+            response = self.__session__.get(
+                self.__base_url__, params=params, timeout=10).json()
             total = int(response['total'])
             return {
                 'total': total,
@@ -184,6 +186,10 @@ class WallpaperDownloaderUi:
         self.root.mainloop()
 
 
-if __name__ == '__main__':
+def main():
     downloader_ui = WallpaperDownloaderUi()
     downloader_ui.start()
+
+
+if __name__ == '__main__':
+    main()
