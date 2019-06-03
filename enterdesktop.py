@@ -1,30 +1,50 @@
-# -*- coding: UTF-8 -*-
 """回车壁纸下载"""
 from bs4 import BeautifulSoup
 import os
-from multiprocessing.pool import ThreadPool
 import requests
 from requests.adapters import HTTPAdapter
 import logging
+from settings import Settings
+from tkinter import *
+from tkinter.ttk import *
+from tkinter.filedialog import askdirectory
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
+def escape(input_str):
+    char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
+    input_str = input_str.strip()
+    for char in char_arr:
+        input_str = input_str.replace(char, '_')
+    return input_str
+
+
 class EnterDesktop:
-    def __init__(self, save_path=None, ignore_title=False):
+    def __init__(self):
         self.logger = logging.getLogger("EnterDesktop")
-        self.session = requests.Session()
-        self.session.mount('http://', HTTPAdapter(max_retries=2))
-        self.session.mount('https://', HTTPAdapter(max_retries=2))
-        self.base_url = 'https://mm.enterdesk.com'
-        self.save_path = '/home/zodiac/Data/Wallpaper/BeautifullGirls'
-        self.ignore_title = ignore_title
-        self.pool = ThreadPool(4)
+        self.__settings__ = Settings('enterdesktop.json')
+        self.__session__ = requests.Session()
+        self.__session__.mount('http://', HTTPAdapter(max_retries=2))
+        self.__session__.mount('https://', HTTPAdapter(max_retries=2))
+        self.__base_url__ = self.__settings__.get_setting('base_url')
+        self.__save_path__ = self.__settings__.get_setting('save_path')
+        self.__ignore_title__ = self.__settings__.get_setting('ignore_title')
+
+    def set_save_path(self, save_path):
+        self.__save_path__ = save_path
+        self.__settings__.set_setting('save_path', save_path)
+        self.__settings__.save_settings()
+
+    def set_ignore_title(self, ignore_title):
+        self.__ignore_title__ = ignore_title
+        self.__settings__.set_setting('ignore_title', ignore_title)
+        self.__settings__.save_settings()
 
     def __get_url_content__(self, url, headers=None):
         try:
-            content = self.session.get(url, headers=headers, timeout=3).content
+            content = self.__session__.get(url, headers=headers, timeout=3).content
             return content
         except Exception as e:
             self.logger.warning('在获取:' + url + '时出错')
@@ -54,7 +74,7 @@ class EnterDesktop:
                     self.logger.info('下载:[' + src + ']到[' + path + ']')
 
     def download_pictures(self, pic_type):
-        base_pic_url = self.base_url + '/' + pic_type + '/'
+        base_pic_url = self.__base_url__ + '/' + pic_type + '/'
         num = 1
         while True:
             pic_url = base_pic_url + str(num) + '.html'
@@ -69,13 +89,13 @@ class EnterDesktop:
                         href = collection['href']
                         soup = self.__parse_html__(href)
                         for pic in self.__get_pics_from_collection__(soup):
-                            if not self.ignore_title:
-                                path = os.path.join(self.save_path, title)
+                            if not self.__ignore_title__:
+                                path = os.path.join(self.__save_path__, title)
                                 if not os.path.exists(path):
                                     os.makedirs(path)
                                 pic_path = os.path.join(path, pic['name'])
                             else:
-                                path = self.save_path
+                                path = self.__save_path__
                                 if not os.path.exists(path):
                                     os.makedirs(path)
                                 pic_path = os.path.join(
@@ -90,7 +110,7 @@ class EnterDesktop:
             num += 1
 
     def download_tuku(self, pic_type):
-        base_pic_url = self.base_url + '/' + pic_type + '/'
+        base_pic_url = self.__base_url__ + '/' + pic_type + '/'
         num = 1
         while True:
             pic_url = base_pic_url + str(num) + '.html'
@@ -104,7 +124,7 @@ class EnterDesktop:
                         img_href = img['src'].replace(
                             'edpic_360_360', 'edpic_source')
                         img_title = img['title'] + img_href.split('/')[-1]
-                        parent_path = os.path.join(self.save_path, pic_type)
+                        parent_path = os.path.join(self.__save_path__, pic_type)
                         if not os.path.exists(parent_path):
                             os.makedirs(parent_path)
                         self.__download__(os.path.join(
@@ -141,44 +161,91 @@ class EnterDesktop:
 
     def start(self, tp='wallpaper'):
         if tp == 'wallpaper':
-            self.base_url = 'https://mm.enterdesk.com'
-            arr = [PicType.DALU, PicType.RIHAN,
-                   PicType.QINGCHUN, PicType.KEAI, PicType.OUMEI]
-            for pic_type in arr:
+            self.__base_url__ = 'https://mm.enterdesk.com'
+            types = self.__settings__.get_setting('types')
+            for pic_type in types:
                 self.logger.info("开始下载:" + pic_type)
-                self.download_pictures(pic_type)
+                self.download_pictures(types[pic_type])
         else:
-            self.base_url = 'https://tu.enterdesk.com'
+            self.__base_url__ = 'https://tu.enterdesk.com'
             self.logger.info("开始下载:图库")
             self.download_tuku('meinv')
 
 
-class PicType:
-    # 大陆
-    DALU = 'dalumeinv'
-    # 日韩
-    RIHAN = 'rihanmeinv'
-    # 港台
-    GANGTAI = 'gangtaimennv'
-    # 清纯
-    QINGCHUN = 'qingchunmeinv'
-    # 动漫
-    DONGMAN = 'dongmanmeinv'
-    # 可爱
-    KEAI = 'keaimeinv'
-    # 欧美
-    OUMEI = 'oumeimeinv'
+class EnterDesktopUi:
+    def __init__(self):
+        self.__downloader__ = EnterDesktop()
+        self.root = Tk()
+        self.root.geometry('250x200')
+        self.root.title('回车壁纸下载器 --by Zodiac')
+        self.__categories_list__ = self.__downloader__.__settings__.get_setting('types')
+        self.__category__ = None
 
+    def get_categories(self):
+        def get_selected(event):
+            w = event.widget
+            selected = w.get()
+            self.__category__ = self.__categories_list__[selected]
 
-def escape(input_str):
-    char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
-    input_str = input_str.strip()
-    for char in char_arr:
-        input_str = input_str.replace(char, '_')
-    return input_str
+        frame = Frame(self.root, width=250, height=50)
+        categories_label = Label(frame, text='选择分类:')
+        categories_label.pack(side=LEFT)
+        options = []
+        for c in self.__categories_list__:
+            options.append(c)
+        combobox = Combobox(frame)
+        combobox['value'] = options
+        combobox.bind('<<ComboboxSelected>>', get_selected)
+        combobox.pack(side=LEFT, after=categories_label)
+        frame.pack_propagate(0)
+        frame.pack(side=TOP)
+
+    def set_save_path(self):
+        frame = Frame(self.root, width=250, height=50)
+        path_label = Label(frame, text=self.__downloader__.__save_path__)
+
+        def get_selected_path():
+            selected_path = askdirectory()
+            self.__downloader__.set_save_path(selected_path)
+            path_label['text'] = selected_path
+
+        path_btn = Button(frame, text='选择下载文件夹:', command=get_selected_path)
+        path_btn.pack(side=LEFT)
+        path_label.pack(side=LEFT, after=path_btn)
+        frame.pack_propagate(0)
+        frame.pack(side=BOTTOM)
+
+    def set_ignore_path(self):
+        def get_selected(event):
+            w = event.widget
+            selected = w.get()
+            if selected == '是':
+                ignore_title = True
+            else:
+                ignore_title = False
+            self.__downloader__.set_ignore_title(ignore_title)
+
+        combobox = Combobox(self.root)
+        categories_label = Label(self.root, text='是否为每个图集设置一个目录:')
+        categories_label.pack(side=LEFT)
+        options = ['是', '否']
+        combobox['value'] = options
+        combobox.current(1)
+        combobox.bind('<<ComboboxSelected>>', get_selected)
+        combobox.pack(side=RIGHT, after=categories_label)
+
+    def start(self):
+        tip_label = Label(self.root, text='点击开始下载后，请耐心等待~')
+        tip_label.pack(side=BOTTOM)
+        start_btn = Button(self.root, text='开始下载',
+                           command=lambda: self.__downloader__.download_pictures(self.__category__))
+        start_btn.pack(side=BOTTOM)
+        self.get_categories()
+        self.set_save_path()
+        self.set_ignore_path()
+        self.root.mainloop()
 
 
 if __name__ == '__main__':
-    EnterDesktop = EnterDesktop(ignore_title=True)
-    EnterDesktop.start()
-    EnterDesktop.start(tp='tuku')
+    ui = EnterDesktopUi()
+    ui.start()
