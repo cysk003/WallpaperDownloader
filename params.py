@@ -1,4 +1,0 @@
-# -*- coding: UTF-8 -*-
-base_url = 'http://wallpaper.apc.360.cn/index.php'
-tags = ['清纯', 'YOU物馆', '性感女神', '丝袜美腿', '欧美女神', '文艺古风', '唯美COS']
-save_path = '/home/zodiac/Data/Wallpaper/BeautifullGirls'

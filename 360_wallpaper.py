@@ -9,11 +9,17 @@ import math
 import requests
 from requests.adapters import HTTPAdapter
 
-import params
+params = {
+    'base_url': 'http://wallpaper.apc.360.cn/index.php',
+    'tags': ['清纯', 'YOU物馆', '性感女神', '丝袜美腿', '欧美女神', '文艺古风', '唯美COS'],
+    'save_path': '/home/zodiac/Data/Wallpaper/BeautifullGirls',
+    'ignore_year': 2016
+}
 
-save_path = params.save_path
-base_url = params.base_url
-tags = params.tags
+save_path = params['save_path']
+base_url = params['.base_url']
+tags = params['tags']
+year = params['ignore_year']
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -100,7 +106,7 @@ if __name__ == "__main__":
     while response is not None and start <= total:
         for pic in response['data']:
             create_time: str = pic['create_time']
-            if create_time < '2014':
+            if create_time < str(year):
                 continue
             id = pic['id']
             path = os.path.join(p, str(id) + '_' +
