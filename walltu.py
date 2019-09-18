@@ -34,10 +34,23 @@ def get_all_cats():
         for ele in all_cats:
             hrefs = ele.find_all('a')
             for href in hrefs:
-                arr.append({'name': href.string, 'href': base_url + href['href']})
-        print(arr)
+                arr.append(
+                    {'name': href.string, 'href': base_url + href['href']})
+        return arr
     else:
         return None
 
 
-get_all_cats()
+def get_articles(ele):
+    href = ele['href']
+    response = session.get(href, headers=headers, timeout=(3, 3))
+    if response.status_code == 200:
+        content = str(response.content, 'utf-8')
+        print(content)
+    pass
+
+
+
+
+cats = get_all_cats()
+get_articles(cats[0])
