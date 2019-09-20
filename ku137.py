@@ -13,7 +13,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 
 base_url = 'https://www.ku137.net/'
-article_url = base_url + 'b/1/list_1_{}.html'
+article_list_url = base_url + 'b/1/list_1_{}.html'
 save_path = '/home/zodiac/Data/ku137'
 
 
@@ -61,10 +61,10 @@ def dowload(file_path, url):
                 print('已下载到{}'.format(file_path))
 
 
-dowload_zip = True
+dowload_zip = False
 
 num = 1
-url = article_url.format(num)
+url = article_list_url.format(num)
 articles = get_articles(url)
 while articles:
     for article in articles:
@@ -90,8 +90,8 @@ while articles:
                 pic_href = pic['href']
                 pic_file = path.join(save_dir, pic_name)
                 dowload(pic_file, pic_href)
-        pic_page += 1
-        pics = get_pics(article_url.format(pic_page))
+            pic_page += 1
+            pics = get_pics(article_url.format(pic_page))
     num += 1
-    url = article_url.format(num)
+    url = article_list_url.format(num)
     articles = get_articles(url)
