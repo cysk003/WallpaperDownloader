@@ -4,7 +4,7 @@ import os
 import requests
 from requests.adapters import HTTPAdapter
 import logging
-from settings_ import Settings
+from settings import Settings
 from tkinter import *
 from tkinter.ttk import *
 from tkinter.filedialog import askdirectory
