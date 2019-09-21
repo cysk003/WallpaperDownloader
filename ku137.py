@@ -54,11 +54,14 @@ def dowload(file_path, url):
     if path.exists(file_path):
         print('{}已存在'.format(file_path))
     else:
-        response = session.get(url, verify=False, timeout=(3, 3))
-        if response.status_code == 200:
-            with open(file_path, 'wb+') as f:
-                f.write(response.content)
-                print('已下载到{}'.format(file_path))
+        try:
+            response = session.get(url, verify=False, timeout=(3, 3))
+            if response.status_code == 200:
+                with open(file_path, 'wb+') as f:
+                    f.write(response.content)
+                    print('已下载到{}'.format(file_path))
+        except Exception as e:
+            print(repr(e))
 
 
 dowload_zip = False
