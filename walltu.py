@@ -83,7 +83,10 @@ def get_pics(article):
         num += 1
         content = str(response.content, 'utf-8')
         soup = BeautifulSoup(content, 'html.parser')
-        pic_href = soup.find('dl', id='d').select('p > img')[0]['src']
+        try:
+            pic_href = soup.find('dl', id='d').select('p > img')[0]['src']
+        except Exception as e:
+            return arr
         pic_name = pic_href.split('/')[-1].split('!')[0]
         arr.append({'name': pic_name, 'href': pic_href, 'referer': href})
         href = href_head + '_' + str(num) + '.html'

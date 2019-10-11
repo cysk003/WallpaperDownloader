@@ -85,6 +85,8 @@ for sub_url in [sub_url_1, sub_url_2]:
                 'Referer': href
             }
             img_url = get_img_start_url(href)
+            if not img_url:
+                continue
             num2 = 1
             while True:
                 get_pic_res = download(img_url + '/' + str(num2) + '.jpg', os.path.join(save_path, title, str(num2) + '.jpg'),

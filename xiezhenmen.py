@@ -18,6 +18,17 @@ save_path = '/media/zodiac/HDD1T/图片/xiezhenmen'
 cookies = session.get(base_url,
                       verify=False, timeout=(3, 3)).cookies
 
+def get_categories(url):
+    arr = []
+    response = session.get(url, cookies=cookies,
+                           verify=False, timeout=(3, 3))
+    if response.status_code == 200:
+        content = str(response.content, 'utf-8')
+        soup = BeautifulSoup(content, 'html.parser') 
+        cats = soup.select('ul.sub-menu > li')
+        for cat in cats:
+            arr.append({'name'}
+
 def get_articles(url):
     articles = []
     response = session.get(url, cookies=cookies,
@@ -47,7 +58,8 @@ def get_pics(url):
             pics.append({'name': name, 'href': href})
     return pics
 
-
+get_categories(base_url)
+exit(0)
 page = 1
 url = base_url + 'page/' + str(page) + '/'
 articles = get_articles(url)
