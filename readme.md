@@ -10,6 +10,7 @@
 * ### Linux用户
     首先检查有没有安装Python3和pip
     ![Check Python3](imgs/read_me_check_python3_linux.png "Check Python3")
+    
     如果能正确打印python和pip路径则说明已经安装python3和pip。否则：
     * 对于Debian系用户(Debian, Ubuntu, Deepin等):
     ```
@@ -43,7 +44,7 @@ python3 filename
 ```
 把上述命令中的filename换做想要执行的文件名即可
 ***
-如果下载失败可以按<kbd>重新运行程序
+如果下载失败可以按<kbd>↑重新运行程序
 ### 文件列表
 | 文件名 | 名称 | 网站 | 网站是否可用 |
 |:----  |:---- |:---- |:----|
