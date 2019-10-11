@@ -27,7 +27,8 @@ def get_categories(url):
         soup = BeautifulSoup(content, 'html.parser') 
         cats = soup.select('ul.sub-menu > li')
         for cat in cats:
-            arr.append({'name'}
+            arr.append({'name': cat.string, 'href': cat['href']}
+    return arr
 
 def get_articles(url):
     articles = []
@@ -58,33 +59,33 @@ def get_pics(url):
             pics.append({'name': name, 'href': href})
     return pics
 
-get_categories(base_url)
-exit(0)
-page = 1
-url = base_url + 'page/' + str(page) + '/'
-articles = get_articles(url)
-while articles:
-    print('开始下载第[' + str(page) + '页]')
-    for article in articles:
-        name = article['name']
-        print('开始下载[' + name + ']')
-        save_dir = path.join(save_path, name)
-        if not path.exists(save_dir):
-            os.makedirs(save_dir)
-        pics = get_pics(article['href'])
-        for pic in pics:
-            pic_name = pic['name']
-            pic_href = pic['href']
-            save_file = path.join(save_dir, pic_name)
-            if path.exists(save_file):
-                print(save_file + '已存在')
-            else:
-                response = session.get(
-                    pic_href, cookies=cookies, verify=False, timeout=(3, 3))
-                if response.status_code == 200:
-                    with open(save_file, 'wb+') as f:
-                        f.write(response.content)
-                        print('下载到' + save_file)
-    page += 1
-    url = base_url + 'page/' + str(page) + '/'
+for cat in get_categories(base_url):
+    print('开始下载: {}'.format(cat))
+    page = 1
+    url = base_url[:-1] + cat['href'] + 'page/' + str(page) + '/'
     articles = get_articles(url)
+    while articles:
+        print('开始下载第[' + str(page) + '页]')
+        for article in articles:
+            name = article['name']
+            print('开始下载[' + name + ']')
+            save_dir = path.join(save_path, name)
+            if not path.exists(save_dir):
+                os.makedirs(save_dir)
+            pics = get_pics(article['href'])
+            for pic in pics:
+                pic_name = pic['name']
+                pic_href = pic['href']
+                save_file = path.join(save_dir, pic_name)
+                if path.exists(save_file):
+                    print(save_file + '已存在')
+                else:
+                    response = session.get(
+                        pic_href, cookies=cookies, verify=False, timeout=(3, 3))
+                    if response.status_code == 200:
+                        with open(save_file, 'wb+') as f:
+                            f.write(response.content)
+                            print('下载到' + save_file)
+        page += 1
+        url = base_url[:-1] + cat['href'] + 'page/' + str(page) + '/'
+        articles = get_articles(url)
