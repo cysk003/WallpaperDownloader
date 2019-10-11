@@ -11,7 +11,7 @@ session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
-
+# base_url = 'https://www.xiezhen.kim/'
 base_url = 'https://www.xiezhen.world/'
 save_path = '/media/zodiac/HDD1T/图片/xiezhenmen'
 
@@ -25,9 +25,9 @@ def get_categories(url):
     if response.status_code == 200:
         content = str(response.content, 'utf-8')
         soup = BeautifulSoup(content, 'html.parser') 
-        cats = soup.select('ul.sub-menu > li')
+        cats = soup.select('ul.sub-menu > li > a')
         for cat in cats:
-            arr.append({'name': cat.string, 'href': cat['href']}
+            arr.append({'name': cat.string, 'href': cat['href']})
     return arr
 
 def get_articles(url):
@@ -59,8 +59,10 @@ def get_pics(url):
             pics.append({'name': name, 'href': href})
     return pics
 
-for cat in get_categories(base_url):
-    print('开始下载: {}'.format(cat))
+use_cat = False
+cats = get_categories(base_url) if use_cat else [{'name': 'all', 'href': '/'}]
+for cat in cats:
+    print('开始下载: {}'.format(cat['name']))
     page = 1
     url = base_url[:-1] + cat['href'] + 'page/' + str(page) + '/'
     articles = get_articles(url)
