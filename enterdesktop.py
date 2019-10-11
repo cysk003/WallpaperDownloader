@@ -5,10 +5,6 @@ import requests
 from requests.adapters import HTTPAdapter
 import logging
 from settings import Settings
-from tkinter import *
-from tkinter.ttk import *
-from tkinter.filedialog import askdirectory
-from threading import Thread
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -22,9 +18,8 @@ def escape(input_str):
     return input_str
 
 
-class EnterDesktop(Thread):
+class EnterDesktop():
     def __init__(self):
-        Thread.__init__(self)
         self.logger = logging.getLogger("EnterDesktop")
         self.__settings__ = Settings('enterdesktop.json')
         self.__session__ = requests.Session()
@@ -34,7 +29,7 @@ class EnterDesktop(Thread):
         self.__save_path__ = self.__settings__.get_setting('save_path')
         self.__ignore_title__ = self.__settings__.get_setting('ignore_title')
         self.__working__ = True
-        self.__pic_type__=None
+        self.__pic_type__ = None
 
     def stop(self):
         self.__working__ = False
@@ -91,7 +86,8 @@ class EnterDesktop(Thread):
             pic_url = base_pic_url + str(num) + '.html'
             soup = self.__parse_html__(pic_url)
             if soup:
-                self.logger.info('开始下载:' + self.__pic_type__ + ',第[' + str(num) + ']页')
+                self.logger.info('开始下载:' + self.__pic_type__ +
+                                 ',第[' + str(num) + ']页')
                 collections = self.__get_collections__(soup)
                 if collections:
                     for collection in collections:
@@ -103,17 +99,20 @@ class EnterDesktop(Thread):
                             for pic in self.__get_pics_from_collection__(soup):
                                 if self.__working__:
                                     if not self.__ignore_title__:
-                                        path = os.path.join(self.__save_path__, title)
+                                        path = os.path.join(
+                                            self.__save_path__, title)
                                         if not os.path.exists(path):
                                             os.makedirs(path)
-                                        pic_path = os.path.join(path, pic['name'])
+                                        pic_path = os.path.join(
+                                            path, pic['name'])
                                     else:
                                         path = self.__save_path__
                                         if not os.path.exists(path):
                                             os.makedirs(path)
                                         pic_path = os.path.join(
                                             path, self.__pic_type__ + '_' + title + '_' + pic['name'])
-                                    self.__download__(pic_path, pic['src'], href)
+                                    self.__download__(
+                                        pic_path, pic['src'], href)
                                 else:
                                     print('正在停止下载图片')
                         else:
@@ -133,7 +132,8 @@ class EnterDesktop(Thread):
             pic_url = base_pic_url + str(num) + '.html'
             soup = self.__parse_html__(pic_url)
             if soup:
-                self.logger.info('开始下载:' + self.__pic_type__ + ',第[' + str(num) + ']页')
+                self.logger.info('开始下载:' + self.__pic_type__ +
+                                 ',第[' + str(num) + ']页')
                 dds = soup.find_all('dd')
                 if dds:
                     for dd in dds:
@@ -177,103 +177,16 @@ class EnterDesktop(Thread):
         else:
             return BeautifulSoup(text, 'html.parser')
 
-    # def start(self, tp='wallpaper'):
-    #     if tp == 'wallpaper':
-    #         self.__base_url__ = 'https://mm.enterdesk.com'
-    #         types = self.__settings__.get_setting('types')
-    #         for pic_type in types:
-    #             self.logger.info("开始下载:" + pic_type)
-    #             self.run(types[pic_type])
-    #     else:
-    #         self.__base_url__ = 'https://tu.enterdesk.com'
-    #         self.logger.info("开始下载:图库")
-    #         self.download_tuku('meinv')
-
-
-class EnterDesktopUi:
-    def __init__(self):
-        self.__downloader__ = EnterDesktop()
-        self.root = Tk()
-        self.root.geometry('250x250')
-        self.root.title('回车壁纸下载器 --by Zodiac')
-        self.__categories_list__ = self.__downloader__.__settings__.get_setting(
-            'types')
-
-    def get_categories(self):
-        def get_selected(event):
-            w = event.widget
-            selected = w.get()
-            self.__downloader__.set_pic_type(self.__categories_list__[selected]) 
-
-        frame = Frame(self.root, width=250, height=50)
-        categories_label = Label(frame, text='选择分类:')
-        categories_label.pack(side=LEFT)
-        options = []
-        for c in self.__categories_list__:
-            options.append(c)
-        combobox = Combobox(frame)
-        combobox['value'] = options
-        combobox.current(0)
-        self.__downloader__.set_pic_type(self.__categories_list__[combobox.get()])
-        combobox.bind('<<ComboboxSelected>>', get_selected)
-        combobox.pack(side=LEFT, after=categories_label)
-        frame.pack_propagate(0)
-        frame.pack(side=TOP)
-
-    def set_save_path(self):
-        frame = Frame(self.root, width=250, height=50)
-        path_label = Label(frame, text=self.__downloader__.__save_path__)
-
-        def get_selected_path():
-            selected_path = askdirectory()
-            self.__downloader__.set_save_path(selected_path)
-            path_label['text'] = selected_path
-
-        path_btn = Button(frame, text='选择下载文件夹:', command=get_selected_path)
-        path_btn.pack(side=LEFT)
-        path_label.pack(side=LEFT, after=path_btn)
-        frame.pack_propagate(0)
-        frame.pack(side=BOTTOM)
-
-    def set_ignore_path(self):
-        def get_selected(event):
-            w = event.widget
-            selected = w.get()
-            if selected == '是':
-                ignore_title = False
-            else:
-                ignore_title = True
-            self.__downloader__.set_ignore_title(ignore_title)
-
-        combobox = Combobox(self.root)
-        categories_label = Label(self.root, text='是否为每个图集设置一个目录:')
-        categories_label.pack(side=LEFT)
-        options = ['是', '否']
-        combobox['value'] = options
-        combobox.current(1)
-        combobox.bind('<<ComboboxSelected>>', get_selected)
-        combobox.pack(side=RIGHT, after=categories_label)
-
-    def start(self):
-        tip_label = Label(self.root, text='点击开始下载后，请耐心等待~')
-        tip_label.pack(side=BOTTOM)
-        start_btn = Button(self.root, text='开始下载',
-                           command=lambda: self.__downloader__.start())
-        start_btn.pack(side=BOTTOM)
-        stop_btn = Button(self.root, text='停止下载',
-                          command=lambda: self.__downloader__.stop())
-        stop_btn.pack(side=BOTTOM, before=start_btn)
-        self.get_categories()
-        self.set_save_path()
-        self.set_ignore_path()
-        self.root.mainloop()
-
 
 def main():
-    ui = EnterDesktopUi()
-    ui.start()
+    ed = EnterDesktop()
+    types = ed.__settings__.get_setting('types')
+    for tp in types:
+        pic_type = types[tp]
+        ed.set_pic_type(pic_type)
+        ed.run()
+    ed.download_tuku()
 
 
 if __name__ == '__main__':
     main()
-
