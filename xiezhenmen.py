@@ -18,17 +18,22 @@ save_path = '/media/zodiac/HDD1T/图片/xiezhenmen'
 cookies = session.get(base_url,
                       verify=False, timeout=(3, 3)).cookies
 
+
 def get_categories(url):
     arr = []
     response = session.get(url, cookies=cookies,
                            verify=False, timeout=(3, 3))
     if response.status_code == 200:
         content = str(response.content, 'utf-8')
-        soup = BeautifulSoup(content, 'html.parser') 
+        soup = BeautifulSoup(content, 'html.parser')
         cats = soup.select('ul.sub-menu > li > a')
         for cat in cats:
-            arr.append({'name': cat.string, 'href': cat['href']})
+            href = cat['href']
+            while href.endswith('/'):
+                href = href[:-1]
+            arr.append({'name': cat.string, 'href': href})
     return arr
+
 
 def get_articles(url):
     articles = []
@@ -59,12 +64,11 @@ def get_pics(url):
             pics.append({'name': name, 'href': href})
     return pics
 
-use_cat = False
-cats = get_categories(base_url) if use_cat else [{'name': 'all', 'href': '/'}]
-for cat in cats:
+
+def download(cat):
     print('开始下载: {}'.format(cat['name']))
     page = 1
-    url = base_url[:-1] + cat['href'] + 'page/' + str(page) + '/'
+    url = base_url[:-1] + cat['href'] + '/page/' + str(page) + '/'
     articles = get_articles(url)
     while articles:
         print('开始下载第[' + str(page) + '页]')
@@ -89,5 +93,11 @@ for cat in cats:
                             f.write(response.content)
                             print('下载到' + save_file)
         page += 1
-        url = base_url[:-1] + cat['href'] + 'page/' + str(page) + '/'
+        url = base_url[:-1] + cat['href'] + '/page/' + str(page) + '/'
         articles = get_articles(url)
+
+use_cat_response = input("是否按照目录下载？[yes/no]").lower()
+use_cat = True if use_cat_response == 'yes' or use_cat_response == '' else False
+cats = get_categories(base_url) if use_cat else [{'name': 'all', 'href': '/'}]
+for cat in cats:
+    download(cat)
