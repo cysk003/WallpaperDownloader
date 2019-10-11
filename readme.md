@@ -1,5 +1,9 @@
 # 壁纸&妹子图片下载工具
-### 首先下载Python3
+### 下载项目到电脑
+![Download Project](imgs/download_project.png "Download Project")
+解压zip包
+***
+### 下载Python3
 * ### Windows用户
    下载Windows版本的Python3，根据系统架构选择64位或32位版本
    ![下载Pyhon3](imgs/readme_download_python3.png "下载Pyhon3")   
@@ -39,6 +43,12 @@
 其余下载美女图片的需要在\"savepath.py\"中配置, 配置方法同上。
 ***
 ### 开始下载
+打开命令窗口
+* ### Windows用户
+    在解压好的文件夹下, 使用<kbd>Shift</kbd>+<kbd>鼠标右键</kbd>, 在弹出的菜单中点击"在此处打开Powershell窗口(S)"
+* ### Linux用户
+    在解压好的文件夹下, 使用<kbd>鼠标右键</kbd>, 在弹出的菜单中点击"在这里打开终端"
+    
 执行命令:
 ```
 python3 filename
