@@ -63,3 +63,7 @@ python3 filename
 |qihoo360_wallpaper.py|360壁纸||是|
 |walltu.py|哇图网|https://www.walltu.com|是|
 |yixiu.py|亿秀网|http://www.tu11.com|是|
+
+### 问题&反馈
+   请联系QQ:925023770
+   不胜感激
