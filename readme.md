@@ -43,14 +43,21 @@ python3 filename
 ```
 把上述命令中的filename换做想要执行的文件名即可
 ***
+如果下载失败可以按<kbd>重新运行程序
 ### 文件列表
-| 文件名 | 名称 | 网站 |
-|:----  |:---- |:---- |
-|2717.py|2717  |https://www.2717.com/|
-|enterdesktop.py|回车壁纸|https://mm.enterdesk.com/|
-|2717.py|2717  |https://www.2717.com/|
-|2717.py|2717  |https://www.2717.com/|
-|2717.py|2717  |https://www.2717.com/|
-|2717.py|2717  |https://www.2717.com/|
-|2717.py|2717  |https://www.2717.com/|
-|2717.py|2717  |https://www.2717.com/|
+| 文件名 | 名称 | 网站 | 网站是否可用 |
+|:----  |:---- |:---- |:----|
+|2717.py|2717  |https://www.2717.com/|是|
+|enterdesktop.py|回车壁纸|https://mm.enterdesk.com/|是|
+|ilemiss.py|艾乐美女|https://www.ilemiss.net/|是|
+|jsmeinv.py|绝色美女|http://www.jsmeinv.com|否|
+|ku137.py|美女写真网|https://www.ku137.net/|是|
+|meitulianmeng.py|美图联盟|https://www.meitulm.com/|是|
+|meitulu.py|美图录|https://www.meitulu.com/|是|
+|meituri.py|美图日|https://www.meituri.com/|是|
+|meizitu.py|妹子图|https://www.mzitu.com|是|
+|mm131.py|mm131|http://www.mm131.com/|否|
+|muzitu.py|木子图|https://www.muzishan.com/|是|
+|qihoo360_wallpaper.py|360壁纸||是|
+|walltu.py|哇图网|https://www.walltu.com|是|
+|yixiu.py|亿秀网|http://www.tu11.com|是|

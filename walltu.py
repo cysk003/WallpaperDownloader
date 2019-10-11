@@ -110,7 +110,7 @@ def downoad():
                     {'name': cat['name'], 'href': cat_href_head + '_' + str(num) + '.html'})
             for article in articles:
                 print('开始下载:' + article['name'])
-                save_dir = path.join(save_path, article['name'])
+                save_dir = path.join(save_path, escape(article['name']))
                 if not path.exists(save_dir):
                     os.makedirs(save_dir)
                 pics = get_pics(article)
@@ -127,12 +127,16 @@ def downoad():
                             'Accept-Encoding': 'gzip, deflate, br',
                             'Connection': 'keep-alive',
                         }
-                        response = session.get(
-                            pic['href'], headers=new_headers, cookies=cookies, timeout=(10, 10))
-                        if response.status_code == 200:
-                            cookies = response.cookies
-                            with open(save_file, 'wb+') as f:
-                                f.write(response.content)
+                        try:
+                            response = session.get(
+                                pic['href'], headers=new_headers, cookies=cookies, timeout=(10, 10))
+                            if response.status_code == 200:
+                                cookies = response.cookies
+                                with open(save_file, 'wb+') as f:
+                                    f.write(response.content)
+                        except Exception as e:
+                            print(repr(e))
+                            continue
                         else:
                             print('获取' + pic['href'] + '失败')
             num += 1

@@ -12,6 +12,13 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 base_url = 'https://www.meitulu.com/'
 save_path = save_path = os.path.join(savepath.save_path, '美图录')
 
+def escape(input_str):
+    char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
+    input_str = input_str.strip()
+    for char in char_arr:
+        input_str = input_str.replace(char, '')
+    return input_str
+
 def download_collections(url):
     html = str(session.get(url, timeout=3).content, encoding='utf-8')
     soup = BeautifulSoup(html, 'html.parser')
@@ -26,7 +33,7 @@ def download_collections(url):
         prefix = pic_url[0:pic_url.rfind('/')]
         pic_name = pic['alt'].strip().replace('<', '《').replace('>', '》') \
             .replace(':', '：')
-        path = os.path.join(save_path, pic_name)
+        path = os.path.join(save_path, escape(pic_name))
         if not os.path.exists(path):
             os.makedirs(path)
         for n in range(1, pic_num + 1):

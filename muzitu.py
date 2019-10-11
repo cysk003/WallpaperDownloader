@@ -20,6 +20,13 @@ base_url = 'https://www.muzishan.com'
 dowload_url = 'https://i.muzishan.com'
 save_path = save_path = os.path.join(savepath.save_path, 'muzitu')
 
+def escape(input_str):
+    char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
+    input_str = input_str.strip()
+    for char in char_arr:
+        input_str = input_str.replace(char, '')
+    return input_str
+
 def get_total_pages():
     pages = 1
     response = session.get(base_url, verify=False, timeout=(3, 3))
@@ -39,7 +46,7 @@ def get_articles(url):
         for a in soup.select('ul > li > span > a'):
             name = a.string
             href = a['href']
-            articles.append({'name': name, 'href': href})
+            articles.append({'name': name, 'href': escape(href)})
     return articles
 
 
@@ -60,15 +67,19 @@ for page in range(0, total_pages + 1):
         article_id = article_href.split('/')[-1]
         num = 1
         pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
-        response = session.get(pic_href,  verify=False, timeout=(3, 3))
-        while response.status_code == 200:
-            save_file = path.join(save_dir, str(num) + '.jpg')
-            if not path.exists(save_file):
-                with open(save_file, 'wb+') as f:
-                    f.write(response.content)
-                    print('下载到' + save_file)
-            else:
-                print(save_file + '已存在')
-            num += 1
-            pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
+        try:
             response = session.get(pic_href,  verify=False, timeout=(3, 3))
+            while response.status_code == 200:
+                save_file = path.join(save_dir, str(num) + '.jpg')
+                if not path.exists(save_file):
+                    with open(save_file, 'wb+') as f:
+                        f.write(response.content)
+                        print('下载到' + save_file)
+                else:
+                    print(save_file + '已存在')
+                num += 1
+                pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
+                response = session.get(pic_href,  verify=False, timeout=(3, 3))
+        except Exception as e:
+            print(repr(e))
+            continue

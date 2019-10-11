@@ -49,12 +49,17 @@ def download_collection(soup):
                     print('['+img_save_path + ']已存在')
                     continue
                 url = prefix + '/' + str(num) + '.jpg'
-                content = session.get(url, timeout=3).content
-                with open(img_save_path, 'wb') as f:
-                    f.write(content)
-                    f.close()
-                    print('已下载[' + img_save_path + ']')
-
+                try:
+                    content_response = session.get(url, timeout=3)
+                    if content_response.status_code == 200:
+                        content = content_response.content
+                        with open(img_save_path, 'wb') as f:
+                            f.write(content)
+                            f.close()
+                            print('已下载[' + img_save_path + ']')
+                except Exception as e:
+                    print(repr(e))
+                    continue
 
 def get_total_pages(url):
     html = str(session.get(url, timeout=3).content, encoding='utf-8')
