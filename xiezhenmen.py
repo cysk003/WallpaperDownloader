@@ -13,7 +13,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 
 base_url = 'https://www.xiezhen.world/'
-save_path = '/home/zodiac/Data/xiezhenmen'
+save_path = '/media/zodiac/HDD1T/图片/xiezhenmen'
 
 cookies = session.get(base_url,
                       verify=False, timeout=(3, 3)).cookies

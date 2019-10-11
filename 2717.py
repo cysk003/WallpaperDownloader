@@ -10,7 +10,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.2717.com'
 pic_url = base_url + '/ent/meinvtupian/'
-save_path = 'D:\\图片\\2717'
+save_path = '/media/zodiac/HDD1T/图片/2717'
 
 start_page = 1
 while True:

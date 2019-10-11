@@ -9,7 +9,7 @@ session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'http://www.jsmeinv.com'
-save_path = 'D:\\图片\\绝色美女'
+save_path = '/media/zodiac/HDD1T/图片/绝色美女/'
 
 
 def __get__(url_, headers_, encoding_):

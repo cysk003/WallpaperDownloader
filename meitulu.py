@@ -14,7 +14,7 @@ base_url = 'https://www.meitulu.com/'
 # rihan
 # xihuan
 url_category = base_url + 'guochan/'
-save_path = 'D:\\图片\\美图录'
+save_path = '/media/zodiac/HDD1T/图片/美图录/'
 
 
 def download_collections(url):

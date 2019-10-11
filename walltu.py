@@ -11,7 +11,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.walltu.com'
 cat_url = base_url + '/mn'
-save_path = '/home/zodiac/Data/walltu'
+save_path = '/media/zodiac/HDD1T/图片/walltu'
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0'

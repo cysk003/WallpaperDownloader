@@ -13,7 +13,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 
 base_url = 'https://www.taoturi.com/'
-save_path = '/home/zodiac/Data/taoturi'
+save_path = '/media/zodiac/HDD1T/图片/taoturi'
 
 headers = {
     'Referer': None,
@@ -68,7 +68,7 @@ def get_pic(url):
     return None
 
 
-num = 53
+num = 1
 articles = get_articles(base_url + 'page_' + str(num) + '.html')
 while articles:
     print('开始下载第[' + str(num) + ']页')

@@ -17,7 +17,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.muzishan.com'
 dowload_url = 'https://i.muzishan.com'
-save_path = '/home/zodiac/Data/muzitu'
+save_path = '/media/zodiac/HDD1T/图片/muzitu/'
 
 
 def get_total_pages():

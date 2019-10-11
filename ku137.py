@@ -14,7 +14,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.ku137.net/'
 article_list_url = base_url + 'b/1/list_1_{}.html'
-save_path = '/home/zodiac/Data/ku137'
+save_path = '/media/zodiac/HDD1T/图片/ku137'
 
 
 def get_articles(url):
@@ -71,7 +71,9 @@ url = article_list_url.format(num)
 articles = get_articles(url)
 while articles:
     for article in articles:
-        article_name = article['name']
+        article_name = article['name'].strip()
+        if article_name.endswith('.'):
+            article_name = article_name[:-1]
         print('开始下载{}'.format(article_name))
         save_dir = path.join(save_path, article_name)
         if not path.exists(save_dir):

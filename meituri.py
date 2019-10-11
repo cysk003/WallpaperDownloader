@@ -11,14 +11,13 @@ session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.meituri.com'
-url_cn = base_url + '/' + 'zhongguo'
-save_path = 'D:\\图片\\美图日'
+save_path = '/media/zodiac/HDD1T/图片/美图日'
 
 
-def download_zhongguo():
-    for index in range(1, get_total_pages_zhongguo() + 1):
-        url = url_cn + '/' + str(index) + '.html' if index != 1 else url_cn
-        html = str(session.get(url, timeout=3).content, encoding='utf-8')
+def download(url):
+    for index in range(1, get_total_pages(url) + 1):
+        real_url = url + '/' + str(index) + '.html' if index != 1 else url
+        html = str(session.get(real_url, timeout=3).content, encoding='utf-8')
         soup = BeautifulSoup(html, 'html.parser')
         download_collection(soup)
 
@@ -32,7 +31,11 @@ def download_collection(soup):
                 0].text.strip().replace('<', '《').replace('>', '》')
             path = os.path.join(save_path, tittle)
             if not os.path.exists(path):
-                os.makedirs(path)
+                try:
+                    os.makedirs(path)
+                except Exception as e:
+                    print(repr(e))
+                    continue
             count_str = collection.find_all(
                 'span', class_=['shuliang'])[0].text
             count = int(count_str[0: -1])
@@ -53,15 +56,15 @@ def download_collection(soup):
                     print('已下载[' + img_save_path + ']')
 
 
-def get_total_pages_zhongguo():
-    html = str(session.get(url_cn, timeout=3).content, encoding='utf-8')
+def get_total_pages(url):
+    html = str(session.get(url, timeout=3).content, encoding='utf-8')
     soup = BeautifulSoup(html, 'html.parser')
     pages = soup.find_all(id='pages')[0].find_all('a')[-2].text
     return int(pages)
 
 
 def get_other_categories():
-    html = str(session.get(url_cn, timeout=3).content, encoding='utf-8')
+    html = str(session.get(base_url, timeout=3).content, encoding='utf-8')
     soup = BeautifulSoup(html, 'html.parser')
     categories = [(x.find_all('a')[0].text, x.find_all('a')[0]['href']) for x in soup.find_all(
         id='tag_ul')[0].find_all('li')]
@@ -76,14 +79,16 @@ def download_other_categories():
         soup = BeautifulSoup(html, 'html.parser')
         while soup:
             download_collection(soup)
-            next_page_s = base_url + \
-                soup.find_all(id='pages')[0].find_all(string='下一页')
-            next_page = next_page_s[0]['href'] if next_page_s else None
+            next_page_s = soup.find(id='pages').find(
+                'a', class_='next', string='下一页')
+            next_page = base_url + next_page_s['href'] if next_page_s else None
             html = str(session.get(next_page, timeout=3).content,
                        encoding='utf-8') if next_page else None
             soup = BeautifulSoup(html, 'html.parser') if html else None
 
 
 if __name__ == "__main__":
-    download_zhongguo()
+    for cat in ['zhongguo', 'riben', 'hanguo', 'taiwan']:
+        url = base_url + '/' + cat
+        download(url)
     download_other_categories()

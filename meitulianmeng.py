@@ -13,7 +13,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 
 base_url = 'https://www.meitulm.com/'
-save_path = '/home/zodiac/Data/meitulianmeng'
+save_path = '/media/zodiac/HDD1T/图片/meitulianmeng'
 
 headers = {
     'Referer': None,

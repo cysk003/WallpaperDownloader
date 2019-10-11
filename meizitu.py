@@ -10,7 +10,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 base_url = 'https://www.mzitu.com'
 all_url = base_url + '/all'
 old_url = base_url + '/old'
-save_path = 'D:\\图片\\妹子图'
+save_path = '/media/zodiac/HDD1T/图片/妹子图'
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)

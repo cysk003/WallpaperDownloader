@@ -9,7 +9,7 @@ session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'http://www.tu11.com'
-save_path = 'D:\\图片\\亿秀'
+save_path = '/media/zodiac/HDD1T/图片/亿秀'
 
 
 def get_collections(collection_url):
@@ -66,28 +66,30 @@ def download(url, path, headers=None):
 
 
 sub_url_1 = '/qingchunmeinvxiezhen/list_4_'
+sub_url_2 = '/meituisiwatupian/list_2_'
 
-num1 = 1
-while True:
-    collection_url = base_url + sub_url_1 + str(num1) + '.html'
-    collections = get_collections(collection_url)
-    if not collections:
-        break
-    for collection in collections:
-        title = collection[0]
-        p = os.path.join(save_path, title)
-        if not os.path.exists(p):
-            os.makedirs(p)
-        href = collection[1]
-        headers = {
-            'Referer': href
-        }
-        img_url = get_img_start_url(href)
-        num2 = 1
-        while True:
-            get_pic_res = download(img_url + '/' + str(num2) + '.jpg', os.path.join(save_path, title, str(num2) + '.jpg'),
-                                   headers)
-            if not get_pic_res:
-                break
-            num2 += 1
-    num1 += 1
+for sub_url in [sub_url_1, sub_url_2]:
+    num1 = 1
+    while True:
+        collection_url = base_url + sub_url + str(num1) + '.html'
+        collections = get_collections(collection_url)
+        if not collections:
+            break
+        for collection in collections:
+            title = collection[0]
+            p = os.path.join(save_path, title)
+            if not os.path.exists(p):
+                os.makedirs(p)
+            href = collection[1]
+            headers = {
+                'Referer': href
+            }
+            img_url = get_img_start_url(href)
+            num2 = 1
+            while True:
+                get_pic_res = download(img_url + '/' + str(num2) + '.jpg', os.path.join(save_path, title, str(num2) + '.jpg'),
+                                    headers)
+                if not get_pic_res:
+                    break
+                num2 += 1
+        num1 += 1
