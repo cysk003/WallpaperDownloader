@@ -1,0 +1,1 @@
+save_path = '/media/zodiac/HDD1T/图片'

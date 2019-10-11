@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from os import path
 import os
 import urllib3
+import savepath
 
 urllib3.disable_warnings()
 
@@ -13,7 +14,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 # base_url = 'https://www.xiezhen.kim/'
 base_url = 'https://www.xiezhen.world/'
-save_path = '/media/zodiac/HDD1T/图片/xiezhenmen'
+save_path = save_path = os.path.join(savepath.save_path, 'xiezhenmen')
 
 cookies = session.get(base_url,
                       verify=False, timeout=(3, 3)).cookies
@@ -86,12 +87,16 @@ def download(cat):
                 if path.exists(save_file):
                     print(save_file + '已存在')
                 else:
-                    response = session.get(
-                        pic_href, cookies=cookies, verify=False, timeout=(3, 3))
-                    if response.status_code == 200:
-                        with open(save_file, 'wb+') as f:
-                            f.write(response.content)
-                            print('下载到' + save_file)
+                    try:    
+                        response = session.get(
+                            pic_href, cookies=cookies, verify=False, timeout=(3, 3))
+                        if response.status_code == 200:
+                            with open(save_file, 'wb+') as f:
+                                f.write(response.content)
+                                print('下载到' + save_file)
+                    except Exception as e:
+                        print(repr(e))
+                        continue
         page += 1
         url = base_url[:-1] + cat['href'] + '/page/' + str(page) + '/'
         articles = get_articles(url)

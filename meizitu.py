@@ -2,6 +2,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 import os.path
+import savepath
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -10,7 +11,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 base_url = 'https://www.mzitu.com'
 all_url = base_url + '/all'
 old_url = base_url + '/old'
-save_path = '/media/zodiac/HDD1T/图片/妹子图'
+save_path = save_path = os.path.join(savepath.save_path, '妹子图')
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)

@@ -3,14 +3,21 @@ import requests
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 import os.path
+import savepath
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'http://www.tu11.com'
-save_path = '/media/zodiac/HDD1T/图片/亿秀'
+save_path = save_path = os.path.join(savepath.save_path, '亿秀')
 
+def escape(input_str):
+    char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
+    input_str = input_str.strip()
+    for char in char_arr:
+        input_str = input_str.replace(char, '')
+    return input_str
 
 def get_collections(collection_url):
     res = []
@@ -76,7 +83,7 @@ for sub_url in [sub_url_1, sub_url_2]:
         if not collections:
             break
         for collection in collections:
-            title = collection[0]
+            title = escape(collection[0])
             p = os.path.join(save_path, title)
             if not os.path.exists(p):
                 os.makedirs(p)

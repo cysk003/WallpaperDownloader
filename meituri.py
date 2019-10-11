@@ -4,14 +4,14 @@ import requests
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 import os.path
-
+import savepath
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.meituri.com'
-save_path = '/media/zodiac/HDD1T/图片/美图日'
+save_path = save_path = os.path.join(savepath.save_path, '美图日')
 
 
 def download(url):

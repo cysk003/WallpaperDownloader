@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from os import path
 import os
 import urllib3
+import savepath
 
 urllib3.disable_warnings()
 
@@ -14,7 +15,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.ku137.net/'
 article_list_url = base_url + 'b/1/list_1_{}.html'
-save_path = '/media/zodiac/HDD1T/图片/ku137'
+save_path = save_path = os.path.join(savepath.save_path, 'ku137')
 
 
 def get_articles(url):

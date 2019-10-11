@@ -3,19 +3,14 @@ import requests
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 import os.path
+import savepath
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.meitulu.com/'
-# guochan
-# gangtai
-# rihan
-# xihuan
-url_category = base_url + 'guochan/'
-save_path = '/media/zodiac/HDD1T/图片/美图录/'
-
+save_path = save_path = os.path.join(savepath.save_path, '美图录')
 
 def download_collections(url):
     html = str(session.get(url, timeout=3).content, encoding='utf-8')
@@ -61,7 +56,9 @@ def get_total_collections(url):
 
 
 if __name__ == "__main__":
-    for num in range(1, get_total_collections(url_category) + 1):
-        url = url_category + str(num) + '.html' if num != 1 else url_category
-        download_collections(url)
-    pass
+    for cat in ['guochan', 'gangtai','rihan','xihuan']:
+        url_category = base_url + cat + '/'
+        for num in range(1, get_total_collections(url_category) + 1):
+            url = url_category + str(num) + '.html' if num != 1 else url_category
+            download_collections(url)
+        pass

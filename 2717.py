@@ -3,6 +3,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 import os.path
+import savepath
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -10,7 +11,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.2717.com'
 pic_url = base_url + '/ent/meinvtupian/'
-save_path = '/media/zodiac/HDD1T/图片/2717'
+save_path = os.path.join(savepath.save_path, '2717')
 
 start_page = 1
 while True:
