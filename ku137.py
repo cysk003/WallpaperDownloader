@@ -22,10 +22,20 @@ def get_articles(url):
     articles = []
     response = session.get(url, verify=False, timeout=(3, 3))
     if response.status_code == 200:
-        content = str(response.content, 'gbk')
-        soup = BeautifulSoup(content, 'html.parser')
-        articles = [{'name': a['title'], 'href': a['href']}
-                    for a in soup.select('div.m-list.ml1 > ul.cl > li > a')]
+        response_content = response.content
+        try:
+            content = str(response_content, 'gb18030')
+        except Exception as e:
+            print(repr(e))
+            try:
+                content = str(response_content, 'utf-8')
+            except Exception as e1:
+                print(repr(e1))
+                content = None
+        if content:
+            soup = BeautifulSoup(content, 'html.parser')
+            articles = [{'name': a['title'], 'href': a['href']}
+                        for a in soup.select('div.m-list.ml1 > ul.cl > li > a')] 
     return articles
 
 
@@ -33,10 +43,14 @@ def get_pics(url):
     pics = []
     response = session.get(url, verify=False, timeout=(3, 3))
     if response.status_code == 200:
-        content = str(response.content, 'gbk')
-        soup = BeautifulSoup(content, 'html.parser')
-        pics = [{'name': pic['src'].split('/')[-1], 'href': pic['src']}
-                for pic in soup.find_all('img', class_='tupian_img')]
+        try:
+            content = str(response.content, 'gbk')
+            soup = BeautifulSoup(content, 'html.parser')
+            pics = [{'name': pic['src'].split('/')[-1], 'href': pic['src']}
+                    for pic in soup.find_all('img', class_='tupian_img')]
+        except Exception as e:
+            print(repr(e))
+            print(url)
     return pics
 
 
@@ -67,7 +81,7 @@ def dowload(file_path, url):
 
 dowload_zip = False
 
-num = 1
+num = 119
 url = article_list_url.format(num)
 articles = get_articles(url)
 while articles:
@@ -81,8 +95,8 @@ while articles:
             os.makedirs(save_dir)
         article_href = article['href']
         article_url = article_href[0: -5] + '_{}.html'
-        zip = get_zip(article_href)
-        if zip and dowload_zip:
+        if dowload_zip:
+            zip = get_zip(article_href)
             print('获取到zip包:{}'.format(zip))
             zip_name = zip['name']
             zip_href = zip['href']

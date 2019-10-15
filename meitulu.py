@@ -33,7 +33,7 @@ def download_collections(url):
         prefix = pic_url[0:pic_url.rfind('/')]
         pic_name = pic['alt'].strip().replace('<', '《').replace('>', '》') \
             .replace(':', '：')
-        path = os.path.join(save_path, escape(pic_name))
+        path = os.path.join(save_path, escape(pic_name.strip()))
         if not os.path.exists(path):
             os.makedirs(path)
         for n in range(1, pic_num + 1):

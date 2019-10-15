@@ -60,7 +60,7 @@ for page in range(0, total_pages + 1):
     for article in articles:
         print('开始下载[{}]'.format(article))
         article_name = article['name']
-        save_dir = path.join(save_path, article_name)
+        save_dir = path.join(save_path, escape(article_name))
         if not path.exists(save_dir):
             os.makedirs(save_dir)
         article_href = article['href']
