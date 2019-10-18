@@ -59,8 +59,12 @@ def get_pic_pages(url):
 
 
 def get_pic(url):
-    response = session.get(url, headers=headers, verify=False, timeout=(3, 3))
-    if response.status_code == 200:
+    try:
+        response = session.get(url, headers=headers, verify=False, timeout=(3, 3))
+    except Exception as e:
+        print(repr(e))
+        response = None
+    if response and response.status_code == 200:
         content = str(response.content, 'utf-8')
         soup = BeautifulSoup(content, 'html.parser')
         pic = soup.find('div', class_='post-body').find('img')

@@ -122,7 +122,7 @@ def download_article(article):
                 response = session.get(
                     pic['href'], headers=new_headers, cookies=g_cookies, timeout=(10, 10))
                 if response.status_code == 200:
-                    cookies = response.cookies
+                    g_cookies = response.cookies
                     with open(save_file, 'wb+') as f:
                         f.write(response.content)
             except Exception as e:

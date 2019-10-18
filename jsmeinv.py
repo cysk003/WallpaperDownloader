@@ -15,7 +15,7 @@ save_path = save_path = os.path.join(savepath.save_path, '绝色美女')
 def __get__(url_, headers_, encoding_):
     try:
         response = session.get(url_, headers=headers_, timeout=3)
-        if response.status_code == requests.codes.ok:
+        if response.status_code == 200:
             content = response.content
             if encoding_:
                 return str(content, encoding_)
