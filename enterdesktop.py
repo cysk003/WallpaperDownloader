@@ -119,7 +119,7 @@ class EnterDesktop():
                                  ',第[' + str(num) + ']页')
                 collections = self.__get_collections__(soup)
                 if collections:
-                    pool = Pool(cpu_count() * 2)
+                    pool = Pool(cpu_count() * 4)
                     pool.map(self.__download_pics__, collections)
                     pool.close()
                     pool.join()

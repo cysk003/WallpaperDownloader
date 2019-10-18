@@ -19,7 +19,8 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.muzishan.com'
 dowload_url = 'https://i.muzishan.com'
-save_path = save_path = os.path.join(savepath.save_path, 'muzitu')
+dir_name = 'muzitu'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 
 def escape(input_str):
@@ -67,7 +68,7 @@ def download_article(article):
         response = session.get(pic_href,  verify=False, timeout=(3, 3))
         while response.status_code == 200:
             save_file = path.join(save_dir, str(num) + '.jpg')
-            if not path.exists(save_file):
+            if not path.exists(save_file) and not savepath.check_exists(dir_name, escape(article_name), str(num) + '.jpg'):
                 with open(save_file, 'wb+') as f:
                     f.write(response.content)
                     print('下载到' + save_file)
@@ -87,7 +88,7 @@ for page in range(0, total_pages + 1):
         articles = get_articles(base_url)
     else:
         articles = get_articles(base_url + '/home/' + str(page))
-    pool = Pool(cpu_count() * 2)
+    pool = Pool(cpu_count() * 4)
     pool.map(download_article, articles)
     pool.close()
     pool.join()

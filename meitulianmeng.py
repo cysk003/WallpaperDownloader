@@ -15,7 +15,8 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 
 base_url = 'https://www.meitulm.com/'
-save_path = save_path = os.path.join(savepath.save_path, 'meitulianmeng')
+dir_name = 'meitulianmeng'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 headers = {
     'Referer': None,
@@ -75,7 +76,7 @@ def download_article(article):
         pic = get_pic(url)
         if pic:
             file_name = path.join(save_dir, pic['name'])
-            if path.exists(file_name):
+            if path.exists(file_name) or savepath.check_exists(dir_name, name, pic['name']):
                 print(file_name + ':已存在')
             else:
                 try:
@@ -93,7 +94,7 @@ num = 1
 articles = get_articles(base_url + 'page_' + str(num) + '.html')
 while articles:
     print('开始下载第[' + str(num) + ']页')
-    pool = Pool(cpu_count() * 2)
+    pool = Pool(cpu_count() * 4)
     pool.map(download_article, articles)
     pool.close()
     pool.join()

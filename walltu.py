@@ -13,7 +13,8 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.walltu.com'
 cat_url = base_url + '/mn'
-save_path = save_path = os.path.join(savepath.save_path, 'walltu')
+dir_name = 'walltu'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0'
@@ -88,6 +89,7 @@ def get_pics(article):
         try:
             pic_href = soup.find('dl', id='d').select('p > img')[0]['src']
         except Exception as e:
+            print(repr(e))
             return arr
         pic_name = pic_href.split('/')[-1].split('!')[0]
         arr.append({'name': pic_name, 'href': pic_href, 'referer': href})
@@ -105,7 +107,7 @@ def download_article(article):
     pics = get_pics(article)
     for pic in pics:
         save_file = path.join(save_dir, pic['name'])
-        if path.exists(save_file):
+        if path.exists(save_file) or savepath.check_exists(dir_name, escape(article['name']), pic['name']):
             print(save_file + ':已存在!')
         else:
             new_headers = {
@@ -142,7 +144,7 @@ def downoad():
             else:
                 articles = get_articles(
                     {'name': cat['name'], 'href': cat_href_head + '_' + str(num) + '.html'})
-            pool = Pool(cpu_count() * 2)
+            pool = Pool(cpu_count() * 4)
             pool.map(download_article, articles)
             pool.close()
             pool.join()

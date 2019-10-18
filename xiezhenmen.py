@@ -15,7 +15,8 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 # base_url = 'https://www.xiezhen.kim/'
 base_url = 'https://www.xiezhen.world/'
-save_path = save_path = os.path.join(savepath.save_path, 'xiezhenmen')
+dir_name = 'xiezhenmen'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 cookies = session.get(base_url,
                       verify=False, timeout=(3, 3)).cookies
@@ -63,7 +64,7 @@ def download_article(article):
         pic_name = pic['name']
         pic_href = pic['href']
         save_file = path.join(save_dir, pic_name)
-        if path.exists(save_file):
+        if path.exists(save_file) or savepath.check_exists(dir_name, name, pic_name):
             print(save_file + '已存在')
         else:
             try:
@@ -99,7 +100,7 @@ def download(cat):
     articles = get_articles(url)
     while articles:
         print('开始下载第[' + str(page) + '页]')
-        pool = Pool(cpu_count() * 2)
+        pool = Pool(cpu_count() * 4)
         pool.map(download_article, articles)
         pool.close()
         pool.join()

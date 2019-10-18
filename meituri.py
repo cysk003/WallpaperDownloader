@@ -12,7 +12,8 @@ session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.meituri.com'
-save_path = save_path = os.path.join(savepath.save_path, '美图日')
+dir_name = '美图日'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 
 def download(url):
@@ -42,7 +43,7 @@ def d_collection(collection):
     # headers = {'Referer': collection.find_all('')}
     for num in range(1, count + 1):
         img_save_path = os.path.join(path, str(num) + '.jpg')
-        if os.path.exists(img_save_path):
+        if os.path.exists(img_save_path) or savepath.check_exists(dir_name, tittle, str(num) + '.jpg'):
             print('['+img_save_path + ']已存在')
             continue
         url = prefix + '/' + str(num) + '.jpg'
@@ -63,7 +64,7 @@ def download_collection(soup):
     all_collections = soup.find_all('div', class_=['hezi'])
     for x in all_collections:
         collections = x.find_all('ul')[0].find_all('li')
-        pool = Pool(cpu_count() * 2)
+        pool = Pool(cpu_count() * 4)
         pool.map(d_collection, collections)
         pool.close()
         pool.join()

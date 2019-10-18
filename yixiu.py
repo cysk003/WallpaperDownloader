@@ -11,7 +11,8 @@ session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'http://www.tu11.com'
-save_path = save_path = os.path.join(savepath.save_path, '亿秀')
+dir_name = '亿秀'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 
 def escape(input_str):
@@ -89,7 +90,10 @@ def download_collection(collection):
         return
     num2 = 1
     while True:
-        get_pic_res = download(img_url + '/' + str(num2) + '.jpg', os.path.join(save_path, title, str(num2) + '.jpg'),
+        if savepath.check_exists(dir_name, title, str(num2) + '.jpg'):
+            get_pic_res = True
+        else:
+            get_pic_res = download(img_url + '/' + str(num2) + '.jpg', os.path.join(save_path, title, str(num2) + '.jpg'),
                                headers)
         if not get_pic_res:
             break
@@ -106,7 +110,7 @@ for sub_url in [sub_url_1, sub_url_2]:
         collections = get_collections(collection_url)
         if not collections:
             break
-        pool = Pool(cpu_count() * 2)
+        pool = Pool(cpu_count() * 4)
         pool.map(download_collection, collections)
         pool.close()
         pool.join()

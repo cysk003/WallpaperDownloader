@@ -16,7 +16,8 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.ku137.net/'
 article_list_url = base_url + 'b/1/list_1_{}.html'
-save_path = save_path = os.path.join(savepath.save_path, 'ku137')
+dir_name = 'ku137'
+save_path = os.path.join(savepath.save_path, dir_name)
 
 
 def get_articles(url):
@@ -45,7 +46,7 @@ def get_pics(url):
     response = session.get(url, verify=False, timeout=(3, 3))
     if response.status_code == 200:
         try:
-            content = str(response.content, 'gbk')
+            content = str(response.content, 'gb18030')
             soup = BeautifulSoup(content, 'html.parser')
             pics = [{'name': pic['src'].split('/')[-1], 'href': pic['src']}
                     for pic in soup.find_all('img', class_='tupian_img')]
@@ -68,14 +69,15 @@ def get_zip(url):
 
 def dowload(file_path, url):
     if path.exists(file_path):
-        print('{}已存在'.format(file_path))
+        pass
+        # print('{}已存在'.format(file_path))
     else:
         try:
             response = session.get(url, verify=False, timeout=(3, 3))
             if response.status_code == 200:
                 with open(file_path, 'wb+') as f:
                     f.write(response.content)
-                    print('已下载到{}'.format(file_path))
+                    # print('已下载到{}'.format(file_path))
         except Exception as e:
             print(repr(e))
 
@@ -84,14 +86,17 @@ dowload_zip = False
 
 
 def download_article(article):
+    print(article)
     global dowload_zip
     article_name = article['name'].strip()
     if article_name.endswith('.'):
         article_name = article_name[:-1]
-    print('开始下载{}'.format(article_name))
     save_dir = path.join(save_path, article_name)
     if not path.exists(save_dir):
-        os.makedirs(save_dir)
+        try:
+            os.makedirs(save_dir)
+        except Exception as e:
+            print(repr(e))
     article_href = article['href']
     article_url = article_href[0: -5] + '_{}.html'
     if dowload_zip:
@@ -100,7 +105,8 @@ def download_article(article):
         zip_name = zip['name']
         zip_href = zip['href']
         zip_file = path.join(save_dir, zip_name)
-        dowload(zip_file, zip_href)
+        if not savepath.check_exists(dir_name, article_name, zip_name):
+            dowload(zip_file, zip_href)
     pics = get_pics(article_href)
     pic_page = 1
     while pics:
@@ -108,7 +114,8 @@ def download_article(article):
             pic_name = pic['name']
             pic_href = pic['href']
             pic_file = path.join(save_dir, pic_name)
-            dowload(pic_file, pic_href)
+            if not savepath.check_exists(dir_name, article_name, pic_name):
+                dowload(pic_file, pic_href)
         pic_page += 1
         pics = get_pics(article_url.format(pic_page))
 
@@ -117,7 +124,8 @@ num = 1
 url = article_list_url.format(num)
 articles = get_articles(url)
 while articles:
-    pool = Pool(cpu_count() * 2)
+    print("开始下载第{}页".format(num))
+    pool = Pool(cpu_count() * 4)
     pool.map(download_article, articles)
     pool.close()
     pool.join()

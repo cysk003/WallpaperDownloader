@@ -15,7 +15,8 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 
 base_url = 'https://www.ilemiss.net/'
-save_path = save_path = os.path.join(savepath.save_path, 'ilemiss')
+dir_name = 'ilemiss'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 headers = {
     'Referer': None,
@@ -100,7 +101,7 @@ def download_article(article):
         pic = get_pic(article_href)
         if pic:
             save_file = path.join(save_dir, pic['name'])
-            if path.exists(save_file):
+            if path.exists(save_file) or savepath.check_exists(dir_name, name, pic['name']):
                 print(save_file + ':已存在')
             else:
                 try:
@@ -111,6 +112,7 @@ def download_article(article):
                             f.write(response.content)
                             print('已下载' + save_file)
                 except Exception as e:
+                    print(repr(e))
                     print('下载' + pic['href'] + '时出错')
 
 
@@ -125,7 +127,7 @@ def dowload(cat):
         else:
             cat_url = url + '/index_' + str(cat_page) + '.html'
         articles = get_articles(cat_url)
-        pool = Pool(cpu_count() * 2)
+        pool = Pool(cpu_count() * 4)
         pool.map(download_article, articles)
         pool.close()
         pool.join()

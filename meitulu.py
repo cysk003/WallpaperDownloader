@@ -11,7 +11,8 @@ session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://www.meitulu.com/'
-save_path = save_path = os.path.join(savepath.save_path, '美图录')
+dir_name = '美图录'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 
 def escape(input_str):
@@ -36,7 +37,7 @@ def download_collection(c):
         os.makedirs(path)
     for n in range(1, pic_num + 1):
         pic_save_path = os.path.join(path, str(n) + '.jpg')
-        if os.path.exists(pic_save_path):
+        if os.path.exists(pic_save_path) or savepath.check_exists(dir_name, escape(pic_name.strip()), str(n) + '.jpg'):
             print('[' + pic_save_path + ']已存在')
             continue
         content = None
@@ -58,7 +59,7 @@ def download_collections(url):
     soup = BeautifulSoup(html, 'html.parser')
     collections = soup.find_all('div', class_=['boxs'])[
         0].find_all('ul', class_=['img'])[0].find_all('li')
-    pool = Pool(cpu_count() * 2)
+    pool = Pool(cpu_count() * 4)
     pool.map(download_collection, collections)
     pool.close()
     pool.join()

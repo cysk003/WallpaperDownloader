@@ -12,7 +12,8 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 base_url = 'https://www.mzitu.com'
 all_url = base_url + '/all'
 old_url = base_url + '/old'
-save_path = save_path = os.path.join(savepath.save_path, '妹子图')
+dir_name = '妹子图'
+save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
@@ -84,7 +85,7 @@ def get_pics(href):
             os.makedirs(path)
         while True:
             pac_save_path = os.path.join(path, str(index) + '.jpg')
-            if os.path.exists(pac_save_path):
+            if os.path.exists(pac_save_path) or savepath.check_exists(dir_name, pic_title, str(index) + '.jpg'):
                 print(pac_save_path + '已存在！')
                 index += 1
                 continue
@@ -106,7 +107,7 @@ def get_pics(href):
 
 
 catas = get_catagories()
-pool = Pool(cpu_count() * 2)
+pool = Pool(cpu_count() * 4)
 pool.map(get_pics, catas)
 pool.close()
 pool.join()
