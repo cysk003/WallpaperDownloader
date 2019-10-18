@@ -19,19 +19,20 @@
     如果能正确打印python和pip路径则说明已经安装python3和pip。否则：
     * 对于Debian系用户(Debian, Ubuntu, Deepin等):
     ```
-    sudo apt insall python3 pip3
+    sudo apt insall python3 python3-pip
     ```
     * 对于Redhat系用户(ReadHat, Fedora, Centos等):
     ```
-    sudo yum install python3 pip3
+    sudo yum install python3 python3-pip
     ```
 ***
 ### 其次安装必要组件
 * ### Windows用户
     点击开始按钮搜索"powershell" -> 右键 -> "以管理员身份运行" -> 输入 "pip install beautifulsoup4"
 * ### Linux用户
+   在终端中运行：
     ```
-    sudo pip install beautifulsoup4
+    sudo pip3 install beautifulsoup4
     ```
 ***
 ### 设置图片保存路径
