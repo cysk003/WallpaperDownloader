@@ -3,6 +3,7 @@ from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 import os.path
 import savepath
+from multiprocessing import Pool, cpu_count
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -56,6 +57,7 @@ def format(i):
     else:
         return str(i)
 
+
 def escape(input_str):
     char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
     input_str = input_str.strip()
@@ -104,5 +106,7 @@ def get_pics(href):
 
 
 catas = get_catagories()
-for cat in catas:
-    get_pics(cat)
+pool = Pool(cpu_count() * 2)
+pool.map(get_pics, catas)
+pool.close()
+pool.join()

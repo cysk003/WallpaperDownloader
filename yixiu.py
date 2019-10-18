@@ -4,6 +4,7 @@ from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 import os.path
 import savepath
+from multiprocessing import Pool, cpu_count
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -12,12 +13,14 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 base_url = 'http://www.tu11.com'
 save_path = save_path = os.path.join(savepath.save_path, '亿秀')
 
+
 def escape(input_str):
     char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
     input_str = input_str.strip()
     for char in char_arr:
         input_str = input_str.replace(char, '')
     return input_str
+
 
 def get_collections(collection_url):
     res = []
@@ -72,6 +75,27 @@ def download(url, path, headers=None):
         return False
 
 
+def download_collection(collection):
+    title = escape(collection[0])
+    p = os.path.join(save_path, title)
+    if not os.path.exists(p):
+        os.makedirs(p)
+    href = collection[1]
+    headers = {
+        'Referer': href
+    }
+    img_url = get_img_start_url(href)
+    if not img_url:
+        return
+    num2 = 1
+    while True:
+        get_pic_res = download(img_url + '/' + str(num2) + '.jpg', os.path.join(save_path, title, str(num2) + '.jpg'),
+                               headers)
+        if not get_pic_res:
+            break
+        num2 += 1
+
+
 sub_url_1 = '/qingchunmeinvxiezhen/list_4_'
 sub_url_2 = '/meituisiwatupian/list_2_'
 
@@ -82,23 +106,8 @@ for sub_url in [sub_url_1, sub_url_2]:
         collections = get_collections(collection_url)
         if not collections:
             break
-        for collection in collections:
-            title = escape(collection[0])
-            p = os.path.join(save_path, title)
-            if not os.path.exists(p):
-                os.makedirs(p)
-            href = collection[1]
-            headers = {
-                'Referer': href
-            }
-            img_url = get_img_start_url(href)
-            if not img_url:
-                continue
-            num2 = 1
-            while True:
-                get_pic_res = download(img_url + '/' + str(num2) + '.jpg', os.path.join(save_path, title, str(num2) + '.jpg'),
-                                    headers)
-                if not get_pic_res:
-                    break
-                num2 += 1
+        pool = Pool(cpu_count() * 2)
+        pool.map(download_collection, collections)
+        pool.close()
+        pool.join()
         num1 += 1

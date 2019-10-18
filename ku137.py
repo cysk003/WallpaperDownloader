@@ -5,6 +5,7 @@ from os import path
 import os
 import urllib3
 import savepath
+from multiprocessing import Pool, cpu_count
 
 urllib3.disable_warnings()
 
@@ -35,7 +36,7 @@ def get_articles(url):
         if content:
             soup = BeautifulSoup(content, 'html.parser')
             articles = [{'name': a['title'], 'href': a['href']}
-                        for a in soup.select('div.m-list.ml1 > ul.cl > li > a')] 
+                        for a in soup.select('div.m-list.ml1 > ul.cl > li > a')]
     return articles
 
 
@@ -81,37 +82,45 @@ def dowload(file_path, url):
 
 dowload_zip = False
 
-num = 119
+
+def download_article(article):
+    global dowload_zip
+    article_name = article['name'].strip()
+    if article_name.endswith('.'):
+        article_name = article_name[:-1]
+    print('开始下载{}'.format(article_name))
+    save_dir = path.join(save_path, article_name)
+    if not path.exists(save_dir):
+        os.makedirs(save_dir)
+    article_href = article['href']
+    article_url = article_href[0: -5] + '_{}.html'
+    if dowload_zip:
+        zip = get_zip(article_href)
+        print('获取到zip包:{}'.format(zip))
+        zip_name = zip['name']
+        zip_href = zip['href']
+        zip_file = path.join(save_dir, zip_name)
+        dowload(zip_file, zip_href)
+    pics = get_pics(article_href)
+    pic_page = 1
+    while pics:
+        for pic in pics:
+            pic_name = pic['name']
+            pic_href = pic['href']
+            pic_file = path.join(save_dir, pic_name)
+            dowload(pic_file, pic_href)
+        pic_page += 1
+        pics = get_pics(article_url.format(pic_page))
+
+
+num = 1
 url = article_list_url.format(num)
 articles = get_articles(url)
 while articles:
-    for article in articles:
-        article_name = article['name'].strip()
-        if article_name.endswith('.'):
-            article_name = article_name[:-1]
-        print('开始下载{}'.format(article_name))
-        save_dir = path.join(save_path, article_name)
-        if not path.exists(save_dir):
-            os.makedirs(save_dir)
-        article_href = article['href']
-        article_url = article_href[0: -5] + '_{}.html'
-        if dowload_zip:
-            zip = get_zip(article_href)
-            print('获取到zip包:{}'.format(zip))
-            zip_name = zip['name']
-            zip_href = zip['href']
-            zip_file = path.join(save_dir, zip_name)
-            dowload(zip_file, zip_href)
-        pics = get_pics(article_href)
-        pic_page = 1
-        while pics:
-            for pic in pics:
-                pic_name = pic['name']
-                pic_href = pic['href']
-                pic_file = path.join(save_dir, pic_name)
-                dowload(pic_file, pic_href)
-            pic_page += 1
-            pics = get_pics(article_url.format(pic_page))
+    pool = Pool(cpu_count() * 2)
+    pool.map(download_article, articles)
+    pool.close()
+    pool.join()
     num += 1
     url = article_list_url.format(num)
     articles = get_articles(url)

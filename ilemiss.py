@@ -5,6 +5,7 @@ from os import path
 import os
 import urllib3
 import savepath
+from multiprocessing import Pool, cpu_count
 
 urllib3.disable_warnings()
 
@@ -82,6 +83,37 @@ def get_pic(url):
         return None
 
 
+def download_article(article):
+    name = article['name']
+    print('开始下载合集[' + name + ']')
+    save_dir = path.join(save_path, name)
+    if not path.exists(save_dir):
+        os.makedirs(save_dir)
+    article_href = article['href']
+    article_href_head = article_href[0: -5]
+    article_pages = get_article_pages(article_href)
+    print('合集[' + name + ']共有[' + str(article_pages) + ']张图片')
+    for article_page in range(1, article_pages + 1):
+        if article_page != 1:
+            article_href = article_href_head + \
+                '_' + str(article_page) + '.html'
+        pic = get_pic(article_href)
+        if pic:
+            save_file = path.join(save_dir, pic['name'])
+            if path.exists(save_file):
+                print(save_file + ':已存在')
+            else:
+                try:
+                    response = session.get(
+                        pic['href'], headers=headers, verify=False, timeout=(3, 3))
+                    if response.status_code == 200:
+                        with open(save_file, 'wb+') as f:
+                            f.write(response.content)
+                            print('已下载' + save_file)
+                except Exception as e:
+                    print('下载' + pic['href'] + '时出错')
+
+
 def dowload(cat):
     url = base_url + cat
     cat_pages = get_cat_pages(url)
@@ -93,35 +125,10 @@ def dowload(cat):
         else:
             cat_url = url + '/index_' + str(cat_page) + '.html'
         articles = get_articles(cat_url)
-        for article in articles:
-            name = article['name']
-            print('开始下载合集[' + name + ']')
-            save_dir = path.join(save_path, name)
-            if not path.exists(save_dir):
-                os.makedirs(save_dir)
-            article_href = article['href']
-            article_href_head = article_href[0: -5]
-            article_pages = get_article_pages(article_href)
-            print('合集[' + name + ']共有[' + str(article_pages) + ']张图片')
-            for article_page in range(1, article_pages + 1):
-                if article_page != 1:
-                    article_href = article_href_head + \
-                        '_' + str(article_page) + '.html'
-                pic = get_pic(article_href)
-                if pic:
-                    save_file = path.join(save_dir, pic['name'])
-                    if path.exists(save_file):
-                        print(save_file + ':已存在')
-                    else:
-                        try:
-                            response = session.get(
-                                pic['href'], headers=headers, verify=False, timeout=(3, 3))
-                            if response.status_code == 200:
-                                with open(save_file, 'wb+') as f:
-                                    f.write(response.content)
-                                    print('已下载' + save_file)
-                        except Exception as e:
-                            print('下载' + pic['href'] + '时出错')
+        pool = Pool(cpu_count() * 2)
+        pool.map(download_article, articles)
+        pool.close()
+        pool.join()
 
 
 cats = [

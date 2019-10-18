@@ -5,6 +5,7 @@ from os import path
 import os
 import urllib3
 import savepath
+from multiprocessing import Pool, cpu_count
 
 urllib3.disable_warnings()
 
@@ -69,33 +70,39 @@ def get_pic(url):
     return None
 
 
+def download_article(article):
+    name = article['name']
+    print('开始下载:' + name)
+    save_dir = path.join(save_path, name)
+    if not path.exists(save_dir):
+        os.makedirs(save_dir)
+    pages = get_pic_pages(article['href'])
+    for p in range(1, pages + 1):
+        url = article['href'] + '?page=' + str(p)
+        pic = get_pic(url)
+        if pic:
+            file_name = path.join(save_dir, pic['name'])
+            if path.exists(file_name):
+                print(file_name + ':已存在')
+            else:
+                try:
+                    response = session.get(
+                        pic['href'], headers=headers, verify=False, timeout=(10, 10))
+                    if response.status_code == 200:
+                        with open(file_name, 'wb+') as f:
+                            f.write(response.content)
+                        print('下载到:' + file_name)
+                except Exception as e:
+                    print(repr(e))
+
+
 num = 1
 articles = get_articles(base_url + 'page_' + str(num) + '.html')
 while articles:
     print('开始下载第[' + str(num) + ']页')
-    for article in articles:
-        name = article['name']
-        print('开始下载:' + name)
-        save_dir = path.join(save_path, name)
-        if not path.exists(save_dir):
-            os.makedirs(save_dir)
-        pages = get_pic_pages(article['href'])
-        for p in range(1, pages + 1):
-            url = article['href'] + '?page=' + str(p)
-            pic = get_pic(url)
-            if pic:
-                file_name = path.join(save_dir, pic['name'])
-                if path.exists(file_name):
-                    print(file_name + ':已存在')
-                else:
-                    try:
-                        response = session.get(
-                            pic['href'], headers=headers, verify=False, timeout=(10, 10))
-                        if response.status_code == 200:
-                            with open(file_name, 'wb+') as f:
-                                f.write(response.content)
-                            print('下载到:' + file_name)
-                    except Exception as e:
-                        print(repr(e))
+    pool = Pool(cpu_count() * 2)
+    pool.map(download_article, articles)
+    pool.close()
+    pool.join()
     num += 1
     articles = get_articles(base_url + 'page_' + str(num) + '.html')

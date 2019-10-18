@@ -5,6 +5,7 @@ import requests
 from requests.adapters import HTTPAdapter
 import logging
 from settings import Settings
+from multiprocessing import Pool, cpu_count
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -68,6 +69,34 @@ class EnterDesktop():
                 self.logger.error(e)
                 return None
 
+    def __download_pics__(self, collection):
+        if self.__working__:
+            title = escape(collection['title'])
+            self.logger.info('开始下载:' + title)
+            href = collection['href']
+            soup = self.__parse_html__(href)
+            for pic in self.__get_pics_from_collection__(soup):
+                if self.__working__:
+                    if not self.__ignore_title__:
+                        path = os.path.join(
+                            self.__save_path__, title)
+                        if not os.path.exists(path):
+                            os.makedirs(path)
+                        pic_path = os.path.join(
+                            path, pic['name'])
+                    else:
+                        path = self.__save_path__
+                        if not os.path.exists(path):
+                            os.makedirs(path)
+                        pic_path = os.path.join(
+                            path, self.__pic_type__ + '_' + title + '_' + pic['name'])
+                    self.__download__(
+                        pic_path, pic['src'], href)
+                else:
+                    print('正在停止下载图片')
+        else:
+            print('正在停止下载合集')
+
     def __download__(self, path, src, referer):
         if os.path.exists(path):
             self.logger.info('[' + path + ']已存在')
@@ -90,33 +119,10 @@ class EnterDesktop():
                                  ',第[' + str(num) + ']页')
                 collections = self.__get_collections__(soup)
                 if collections:
-                    for collection in collections:
-                        if self.__working__:
-                            title = escape(collection['title'])
-                            self.logger.info('开始下载:' + title)
-                            href = collection['href']
-                            soup = self.__parse_html__(href)
-                            for pic in self.__get_pics_from_collection__(soup):
-                                if self.__working__:
-                                    if not self.__ignore_title__:
-                                        path = os.path.join(
-                                            self.__save_path__, title)
-                                        if not os.path.exists(path):
-                                            os.makedirs(path)
-                                        pic_path = os.path.join(
-                                            path, pic['name'])
-                                    else:
-                                        path = self.__save_path__
-                                        if not os.path.exists(path):
-                                            os.makedirs(path)
-                                        pic_path = os.path.join(
-                                            path, self.__pic_type__ + '_' + title + '_' + pic['name'])
-                                    self.__download__(
-                                        pic_path, pic['src'], href)
-                                else:
-                                    print('正在停止下载图片')
-                        else:
-                            print('正在停止下载合集')
+                    pool = Pool(cpu_count() * 2)
+                    pool.map(self.__download_pics__, collections)
+                    pool.close()
+                    pool.join()
                 else:
                     self.logger.warning('第[' + str(num) + ']页为空，跳出循环')
                     break

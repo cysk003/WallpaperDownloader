@@ -8,6 +8,7 @@ from os import path
 import os
 import urllib3
 import savepath
+from multiprocessing import Pool, cpu_count
 
 urllib3.disable_warnings()
 
@@ -20,12 +21,14 @@ base_url = 'https://www.muzishan.com'
 dowload_url = 'https://i.muzishan.com'
 save_path = save_path = os.path.join(savepath.save_path, 'muzitu')
 
+
 def escape(input_str):
     char_arr = '?!=()#%&$^*|\\;\'\".,:\t\n\r\b'
     input_str = input_str.strip()
     for char in char_arr:
         input_str = input_str.replace(char, '')
     return input_str
+
 
 def get_total_pages():
     pages = 1
@@ -50,6 +53,33 @@ def get_articles(url):
     return articles
 
 
+def download_article(article):
+    print('开始下载[{}]'.format(article))
+    article_name = article['name']
+    save_dir = path.join(save_path, escape(article_name))
+    if not path.exists(save_dir):
+        os.makedirs(save_dir)
+    article_href = article['href']
+    article_id = article_href.split('/')[-1]
+    num = 1
+    pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
+    try:
+        response = session.get(pic_href,  verify=False, timeout=(3, 3))
+        while response.status_code == 200:
+            save_file = path.join(save_dir, str(num) + '.jpg')
+            if not path.exists(save_file):
+                with open(save_file, 'wb+') as f:
+                    f.write(response.content)
+                    print('下载到' + save_file)
+            else:
+                print(save_file + '已存在')
+            num += 1
+            pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
+            response = session.get(pic_href,  verify=False, timeout=(3, 3))
+    except Exception as e:
+        print(repr(e))
+
+
 total_pages = get_total_pages()
 for page in range(0, total_pages + 1):
     print('开始下载第{}页'.format(page + 1))
@@ -57,29 +87,7 @@ for page in range(0, total_pages + 1):
         articles = get_articles(base_url)
     else:
         articles = get_articles(base_url + '/home/' + str(page))
-    for article in articles:
-        print('开始下载[{}]'.format(article))
-        article_name = article['name']
-        save_dir = path.join(save_path, escape(article_name))
-        if not path.exists(save_dir):
-            os.makedirs(save_dir)
-        article_href = article['href']
-        article_id = article_href.split('/')[-1]
-        num = 1
-        pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
-        try:
-            response = session.get(pic_href,  verify=False, timeout=(3, 3))
-            while response.status_code == 200:
-                save_file = path.join(save_dir, str(num) + '.jpg')
-                if not path.exists(save_file):
-                    with open(save_file, 'wb+') as f:
-                        f.write(response.content)
-                        print('下载到' + save_file)
-                else:
-                    print(save_file + '已存在')
-                num += 1
-                pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
-                response = session.get(pic_href,  verify=False, timeout=(3, 3))
-        except Exception as e:
-            print(repr(e))
-            continue
+    pool = Pool(cpu_count() * 2)
+    pool.map(download_article, articles)
+    pool.close()
+    pool.join()

@@ -5,6 +5,7 @@ from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 import os.path
 import savepath
+from multiprocessing import Pool, cpu_count
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -22,44 +23,51 @@ def download(url):
         download_collection(soup)
 
 
+def d_collection(collection):
+    tittle = collection.find_all('p', class_=['biaoti'])[
+        0].text.strip().replace('<', '《').replace('>', '》')
+    path = os.path.join(save_path, tittle)
+    if not os.path.exists(path):
+        try:
+            os.makedirs(path)
+        except Exception as e:
+            print(repr(e))
+            return
+    count_str = collection.find_all(
+        'span', class_=['shuliang'])[0].text
+    count = int(count_str[0: -1])
+    print('共有' + str(count) + '张图片')
+    img_url = collection.find_all('img')[0]['src']
+    prefix = img_url[0: img_url.rfind('/')]
+    # headers = {'Referer': collection.find_all('')}
+    for num in range(1, count + 1):
+        img_save_path = os.path.join(path, str(num) + '.jpg')
+        if os.path.exists(img_save_path):
+            print('['+img_save_path + ']已存在')
+            continue
+        url = prefix + '/' + str(num) + '.jpg'
+        try:
+            content_response = session.get(url, timeout=3)
+            if content_response.status_code == 200:
+                content = content_response.content
+                with open(img_save_path, 'wb') as f:
+                    f.write(content)
+                    f.close()
+                    print('已下载[' + img_save_path + ']')
+        except Exception as e:
+            print(repr(e))
+            continue
+
+
 def download_collection(soup):
     all_collections = soup.find_all('div', class_=['hezi'])
     for x in all_collections:
-        collections = x.find_all('ul')[0]
-        for collection in collections.find_all('li'):
-            tittle = collection.find_all('p', class_=['biaoti'])[
-                0].text.strip().replace('<', '《').replace('>', '》')
-            path = os.path.join(save_path, tittle)
-            if not os.path.exists(path):
-                try:
-                    os.makedirs(path)
-                except Exception as e:
-                    print(repr(e))
-                    continue
-            count_str = collection.find_all(
-                'span', class_=['shuliang'])[0].text
-            count = int(count_str[0: -1])
-            print('共有' + str(count) + '张图片')
-            img_url = collection.find_all('img')[0]['src']
-            prefix = img_url[0: img_url.rfind('/')]
-            # headers = {'Referer': collection.find_all('')}
-            for num in range(1, count + 1):
-                img_save_path = os.path.join(path, str(num) + '.jpg')
-                if os.path.exists(img_save_path):
-                    print('['+img_save_path + ']已存在')
-                    continue
-                url = prefix + '/' + str(num) + '.jpg'
-                try:
-                    content_response = session.get(url, timeout=3)
-                    if content_response.status_code == 200:
-                        content = content_response.content
-                        with open(img_save_path, 'wb') as f:
-                            f.write(content)
-                            f.close()
-                            print('已下载[' + img_save_path + ']')
-                except Exception as e:
-                    print(repr(e))
-                    continue
+        collections = x.find_all('ul')[0].find_all('li')
+        pool = Pool(cpu_count() * 2)
+        pool.map(d_collection, collections)
+        pool.close()
+        pool.join()
+
 
 def get_total_pages(url):
     html = str(session.get(url, timeout=3).content, encoding='utf-8')

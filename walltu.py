@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from os import path
 import os
 import savepath
+from multiprocessing import Pool, cpu_count
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -95,8 +96,41 @@ def get_pics(article):
     return arr
 
 
+def download_article(article):
+    global g_cookies
+    print('开始下载:' + article['name'])
+    save_dir = path.join(save_path, escape(article['name']))
+    if not path.exists(save_dir):
+        os.makedirs(save_dir)
+    pics = get_pics(article)
+    for pic in pics:
+        save_file = path.join(save_dir, pic['name'])
+        if path.exists(save_file):
+            print(save_file + ':已存在!')
+        else:
+            new_headers = {
+                'Referer': pic['referer'],
+                'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0',
+                'Accept': 'image/webp,*/*',
+                'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Connection': 'keep-alive',
+            }
+            try:
+                response = session.get(
+                    pic['href'], headers=new_headers, cookies=g_cookies, timeout=(10, 10))
+                if response.status_code == 200:
+                    cookies = response.cookies
+                    with open(save_file, 'wb+') as f:
+                        f.write(response.content)
+            except Exception as e:
+                print(repr(e))
+                continue
+            else:
+                print('获取' + pic['href'] + '失败')
+
+
 def downoad():
-    cookies = g_cookies
     cats = get_all_cats()
     for cat in cats:
         cat_href_head = cat['href'][0: -5]
@@ -108,37 +142,10 @@ def downoad():
             else:
                 articles = get_articles(
                     {'name': cat['name'], 'href': cat_href_head + '_' + str(num) + '.html'})
-            for article in articles:
-                print('开始下载:' + article['name'])
-                save_dir = path.join(save_path, escape(article['name']))
-                if not path.exists(save_dir):
-                    os.makedirs(save_dir)
-                pics = get_pics(article)
-                for pic in pics:
-                    save_file = path.join(save_dir, pic['name'])
-                    if path.exists(save_file):
-                        print(save_file + ':已存在!')
-                    else:
-                        new_headers = {
-                            'Referer': pic['referer'],
-                            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0',
-                            'Accept': 'image/webp,*/*',
-                            'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3',
-                            'Accept-Encoding': 'gzip, deflate, br',
-                            'Connection': 'keep-alive',
-                        }
-                        try:
-                            response = session.get(
-                                pic['href'], headers=new_headers, cookies=cookies, timeout=(10, 10))
-                            if response.status_code == 200:
-                                cookies = response.cookies
-                                with open(save_file, 'wb+') as f:
-                                    f.write(response.content)
-                        except Exception as e:
-                            print(repr(e))
-                            continue
-                        else:
-                            print('获取' + pic['href'] + '失败')
+            pool = Pool(cpu_count() * 2)
+            pool.map(download_article, articles)
+            pool.close()
+            pool.join()
             num += 1
 
 
