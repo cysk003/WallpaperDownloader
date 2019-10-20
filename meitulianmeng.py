@@ -94,9 +94,11 @@ num = 1
 articles = get_articles(base_url + 'page_' + str(num) + '.html')
 while articles:
     print('开始下载第[' + str(num) + ']页')
-    pool = Pool(cpu_count() * 2)
-    pool.map(download_article, articles)
-    pool.close()
-    pool.join()
+    # pool = Pool(cpu_count() * 2)
+    # pool.map(download_article, articles)
+    # pool.close()
+    # pool.join()
+    for article in articles:
+        download_article(article)
     num += 1
     articles = get_articles(base_url + 'page_' + str(num) + '.html')
