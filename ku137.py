@@ -120,12 +120,20 @@ def download_article(article):
         pics = get_pics(article_url.format(pic_page))
 
 
-num = 1
+num_str = input("您要从第几页开始？[默认1]")
+if num_str.strip() == "":
+    num = 1
+else:
+    try:
+        num = int(num_str)
+    except Exception as e:
+        print("错误的数字！默认为1")
+print("将要从第{}页开始下载！".format(num))
 url = article_list_url.format(num)
 articles = get_articles(url)
 while articles:
     print("开始下载第{}页".format(num))
-    pool = Pool(cpu_count() * 4)
+    pool = Pool(cpu_count() * 2)
     pool.map(download_article, articles)
     pool.close()
     pool.join()

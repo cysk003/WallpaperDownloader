@@ -127,7 +127,7 @@ def dowload(cat):
         else:
             cat_url = url + '/index_' + str(cat_page) + '.html'
         articles = get_articles(cat_url)
-        pool = Pool(cpu_count() * 4)
+        pool = Pool(cpu_count() * 2)
         pool.map(download_article, articles)
         pool.close()
         pool.join()

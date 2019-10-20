@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 import os.path
 import savepath
 from multiprocessing import Pool, cpu_count
+import sys
+sys.setrecursionlimit(1000000)
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -64,7 +66,7 @@ def download_collection(soup):
     all_collections = soup.find_all('div', class_=['hezi'])
     for x in all_collections:
         collections = x.find_all('ul')[0].find_all('li')
-        pool = Pool(cpu_count() * 4)
+        pool = Pool(cpu_count() * 2)
         pool.map(d_collection, collections)
         pool.close()
         pool.join()

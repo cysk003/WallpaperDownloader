@@ -108,7 +108,8 @@ def download_article(article):
     for pic in pics:
         save_file = path.join(save_dir, pic['name'])
         if path.exists(save_file) or savepath.check_exists(dir_name, escape(article['name']), pic['name']):
-            print(save_file + ':已存在!')
+            # print(save_file + ':已存在!')
+            pass
         else:
             new_headers = {
                 'Referer': pic['referer'],
@@ -144,7 +145,7 @@ def downoad():
             else:
                 articles = get_articles(
                     {'name': cat['name'], 'href': cat_href_head + '_' + str(num) + '.html'})
-            pool = Pool(cpu_count() * 4)
+            pool = Pool(cpu_count() * 2)
             pool.map(download_article, articles)
             pool.close()
             pool.join()

@@ -110,7 +110,7 @@ for sub_url in [sub_url_1, sub_url_2]:
         collections = get_collections(collection_url)
         if not collections:
             break
-        pool = Pool(cpu_count() * 4)
+        pool = Pool(cpu_count() * 2)
         pool.map(download_collection, collections)
         pool.close()
         pool.join()

@@ -68,6 +68,7 @@ def escape(input_str):
 
 
 def get_pics(href):
+    global cookies
     index = 1
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0',
@@ -80,13 +81,14 @@ def get_pics(href):
         pic = div.find('img')
         pic_base_url = pic['src'][:-6]
         pic_title = escape(pic['alt'])
+        print("开始下载{}, {}".format(pic_title, pic['src']))
         path = os.path.join(save_path, pic_title)
         if not os.path.exists(path):
             os.makedirs(path)
         while True:
             pac_save_path = os.path.join(path, str(index) + '.jpg')
             if os.path.exists(pac_save_path) or savepath.check_exists(dir_name, pic_title, str(index) + '.jpg'):
-                print(pac_save_path + '已存在！')
+                # print(pac_save_path + '已存在！')
                 index += 1
                 continue
             else:
@@ -95,10 +97,10 @@ def get_pics(href):
                     get_pic_response = session.get(
                         pic_url, headers=headers, cookies=cookies, timeout=5)
                     if get_pic_response and get_pic_response.status_code == 200:
+                        cookies = get_pic_response.cookies
                         pic_content = get_pic_response.content
                         with open(pac_save_path, 'wb+') as f:
                             f.write(pic_content)
-                            print('已下载' + pac_save_path)
                     else:
                         break
                 except Exception as e:
@@ -107,7 +109,6 @@ def get_pics(href):
 
 
 catas = get_catagories()
-pool = Pool(cpu_count() * 4)
-pool.map(get_pics, catas)
-pool.close()
-pool.join()
+for cat in catas:
+    get_pics(cat)
+

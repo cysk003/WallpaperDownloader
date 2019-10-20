@@ -6,6 +6,8 @@ import os
 import urllib3
 import savepath
 from multiprocessing import Pool, cpu_count
+import sys
+sys.setrecursionlimit(100000)
 
 urllib3.disable_warnings()
 
@@ -65,7 +67,8 @@ def download_article(article):
         pic_href = pic['href']
         save_file = path.join(save_dir, pic_name)
         if path.exists(save_file) or savepath.check_exists(dir_name, name, pic_name):
-            print(save_file + '已存在')
+            # print(save_file + '已存在')
+            pass
         else:
             try:
                 response = session.get(
@@ -73,7 +76,7 @@ def download_article(article):
                 if response.status_code == 200:
                     with open(save_file, 'wb+') as f:
                         f.write(response.content)
-                        print('下载到' + save_file)
+                        # print('下载到' + save_file)
             except Exception as e:
                 print(repr(e))
 
@@ -100,10 +103,12 @@ def download(cat):
     articles = get_articles(url)
     while articles:
         print('开始下载第[' + str(page) + '页]')
-        pool = Pool(cpu_count() * 4)
-        pool.map(download_article, articles)
-        pool.close()
-        pool.join()
+        # pool = Pool(cpu_count())
+        # pool.map(download_article, articles)
+        # pool.close()
+        # pool.join()
+        for article in articles:
+            download_article(article)
         page += 1
         url = base_url[:-1] + cat['href'] + '/page/' + str(page) + '/'
         articles = get_articles(url)

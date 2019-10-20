@@ -9,6 +9,8 @@ import os
 import urllib3
 import savepath
 from multiprocessing import Pool, cpu_count
+import sys
+sys.setrecursionlimit(100000)
 
 urllib3.disable_warnings()
 
@@ -88,7 +90,7 @@ for page in range(0, total_pages + 1):
         articles = get_articles(base_url)
     else:
         articles = get_articles(base_url + '/home/' + str(page))
-    pool = Pool(cpu_count() * 4)
+    pool = Pool(cpu_count() * 2)
     pool.map(download_article, articles)
     pool.close()
     pool.join()
