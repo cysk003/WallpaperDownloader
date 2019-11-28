@@ -28,7 +28,7 @@
 ***
 ### 其次安装必要组件
 * ### Windows用户
-    点击开始按钮搜索"powershell" -> 右键 -> "以管理员身份运行" -> 输入 "pip install beautifulsoup4"
+    点击开始按钮搜索"powershell" -> 右键 -> "以管理员身份运行" -> 输入 "pip install beautifulsoup4 requests"
 * ### Linux用户
    在终端中运行：
     ```
