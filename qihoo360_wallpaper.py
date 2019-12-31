@@ -108,7 +108,7 @@ class WallpaperDownloader():
                     path = os.path.join(self.__save_path__, str(pic_id) + '_' +
                                         create_time.split(' ')[0].replace('-', '_') + '.jpg')
                     if os.path.exists(path):
-                        print('[' + path + '已存在')
+                        print('[' + path + ']已存在')
                         continue
                     url_mid = pic['url_mid']
                     content_mid = self.get_url_content(url_mid, timeout=10)
