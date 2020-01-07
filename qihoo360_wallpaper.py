@@ -4,6 +4,7 @@ import urllib.parse as parser
 import requests
 from requests.adapters import HTTPAdapter
 from settings import Settings
+from img_checker import check_resolution
 
 
 class WallpaperDownloader():
@@ -101,8 +102,9 @@ class WallpaperDownloader():
         while response is not None and start <= total and self.__running__:
             for pic in response['data']:
                 if self.__running__:
+                    resolution = pic['resolution']
                     create_time: str = pic['create_time']
-                    if create_time < str(self.__ignore_year__):
+                    if create_time < str(self.__ignore_year__) or resolution < '1920x1080':
                         continue
                     pic_id = pic['id']
                     path = os.path.join(self.__save_path__, str(pic_id) + '_' +

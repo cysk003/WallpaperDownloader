@@ -6,6 +6,7 @@ from requests.adapters import HTTPAdapter
 import logging
 from settings import Settings
 from multiprocessing import Pool, cpu_count
+from img_checker import check_resolution
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -104,9 +105,12 @@ class EnterDesktop():
         else:
             content = self.__get_url_content__(src, {'Referer': referer})
             if content:
-                with open(path, 'wb') as f:
-                    f.write(content)
-                    self.logger.info('下载:[' + src + ']到[' + path + ']')
+                if check_resolution(content, 1920, 1080):
+                    with open(path, 'wb') as f:
+                        f.write(content)
+                        self.logger.info('下载:[' + src + ']到[' + path + ']')
+                else:
+                    self.logger.warn('{}分辨率小于1920x1080'.format(src))
 
     def run(self):
         base_pic_url = self.__base_url__ + '/' + self.__pic_type__ + '/'
