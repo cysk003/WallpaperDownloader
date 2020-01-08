@@ -1,6 +1,8 @@
 from PIL import Image
 from io import BytesIO
 import os
+from cv2 import cv2 as cv
+from skimage.measure import compare_ssim
 
 def check_resolution(img_content, width, height):
     img = Image.open(BytesIO(img_content))
@@ -20,7 +22,21 @@ def remove_low_resolution_imgs(path, width, height):
             print('删除{}'.format(pic_path))
             os.remove(pic_path)
 
+def img_similarity(path1, path2):
+    img1 = cv.imread(path1)
+    img2 = cv.imread(path2)
+    img_gray1 = cv.cvtColor(cv.resize(img1, (64, 64)), cv.COLOR_BGR2GRAY)
+    img_gray2 = cv.cvtColor(cv.resize(img2, (64, 64)), cv.COLOR_BGR2GRAY)
+    score = compare_ssim(img_gray1, img_gray2)
+    return score
+
 if __name__ == "__main__":
-    path = 'D:\\Wallpaper'
-    remove_low_resolution_imgs(path, 1920, 1080)
-    
+    # path = 'D:\\Wallpaper'
+    # remove_low_resolution_imgs(path, 1920, 1080)
+    with open('D:\\similar.csv', 'w+') as f:
+        base_img = 'C:\\Users\\liubo\\Desktop\\test.jpg'
+        search_dir = 'D:\\Wallpaper'
+        for file_name in os.listdir(search_dir):
+            file_path = os.path.join(search_dir, file_name)
+            similar = img_similarity(base_img, file_path)
+            f.write('{},{}\n'.format(file_path, similar))
