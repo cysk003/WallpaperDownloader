@@ -4,6 +4,7 @@ import os
 import requests
 from requests.adapters import HTTPAdapter
 import logging
+import signal
 from settings import Settings
 from multiprocessing import Pool, cpu_count
 from img_checker import check_resolution
@@ -78,21 +79,18 @@ class EnterDesktop():
             soup = self.__parse_html__(href)
             for pic in self.__get_pics_from_collection__(soup):
                 if self.__working__:
-                    if not self.__ignore_title__:
+                    if self.__ignore_title__ is False:
                         path = os.path.join(
-                            self.__save_path__, title)
+                            self.__save_path__, self.__pic_type__, title)
                         if not os.path.exists(path):
                             os.makedirs(path)
                         pic_path = os.path.join(
                             path, pic['name'])
                     else:
-                        path = self.__save_path__
-                        if not os.path.exists(path):
-                            os.makedirs(path)
-                        pic_path = os.path.join(
-                            path, self.__pic_type__ + '_' + title + '_' + pic['name'])
-                    self.__download__(
-                        pic_path, pic['src'], href)
+                        if not os.path.exists(self.__save_path__):
+                            os.makedirs(self.__save_path__)
+                        pic_path = os.path.join(self.__save_path__, pic['name'])
+                    self.__download__(pic_path, pic['src'], href)
                 else:
                     print('正在停止下载图片')
         else:
@@ -112,7 +110,7 @@ class EnterDesktop():
                 else:
                     self.logger.warn('{}分辨率小于1920x1080'.format(src))
 
-    def run(self):
+    def run(self, use_multi_processor=True):
         base_pic_url = self.__base_url__ + '/' + self.__pic_type__ + '/'
         num = 1
         while self.__working__:
@@ -123,42 +121,17 @@ class EnterDesktop():
                                  ',第[' + str(num) + ']页')
                 collections = self.__get_collections__(soup)
                 if collections:
-                    pool = Pool(cpu_count() * 2)
-                    pool.map(self.__download_pics__, collections)
-                    pool.close()
-                    pool.join()
+                    if use_multi_processor:
+                        pool = Pool(cpu_count() * 2)
+                        result = pool.map(self.__download_pics__, collections)
+                        pool.close()
+                        pool.join()
+                    else:
+                        for collection in collections:
+                            self.__download_pics__(collection)
                 else:
                     self.logger.warning('第[' + str(num) + ']页为空，跳出循环')
                     break
-            else:
-                self.logger.warning('在获取' + pic_url + '时出错，跳出循环')
-                break
-            num += 1
-
-    def download_tuku(self):
-        base_pic_url = self.__base_url__ + '/' + self.__pic_type__ + '/'
-        num = 1
-        while True:
-            pic_url = base_pic_url + str(num) + '.html'
-            soup = self.__parse_html__(pic_url)
-            if soup:
-                self.logger.info('开始下载:' + self.__pic_type__ +
-                                 ',第[' + str(num) + ']页')
-                dds = soup.find_all('dd')
-                if dds:
-                    for dd in dds:
-                        img = dd.find_all('img')[0]
-                        img_href = img['src'].replace(
-                            'edpic_360_360', 'edpic_source')
-                        img_title = img['title'] + img_href.split('/')[-1]
-                        parent_path = os.path.join(
-                            self.__save_path__, self.__pic_type__)
-                        if not os.path.exists(parent_path):
-                            os.makedirs(parent_path)
-                        self.__download__(os.path.join(
-                            parent_path, img_title), img_href, pic_url)
-                else:
-                    return []
             else:
                 self.logger.warning('在获取' + pic_url + '时出错，跳出循环')
                 break
@@ -190,12 +163,19 @@ class EnterDesktop():
 
 def main():
     ed = EnterDesktop()
+    running = True
+    def stop(signum, frame):
+        global running
+        running = False
+        ed.stop()
+    signal.signal(signal.SIGINT, stop)
+    signal.signal(signal.SIGTERM, stop)
     types = ed.__settings__.get_setting('types')
     for tp in types:
-        pic_type = types[tp]
-        ed.set_pic_type(pic_type)
-        ed.run()
-    ed.download_tuku()
+        if running:
+            pic_type = types[tp]
+            ed.set_pic_type(pic_type)
+            ed.run(False)
 
 
 if __name__ == '__main__':
