@@ -60,10 +60,13 @@ def get_zip(url):
     zip = None
     response = session.get(url, verify=False, timeout=(3, 3))
     if response.status_code == 200:
-        content = str(response.content, 'gb18030')
-        soup = BeautifulSoup(content, 'html.parser')
-        zip_a = soup.find('a', string='点击打包下载本套图')
-        zip = {'name': zip_a['href'].split('/')[-1], 'href': zip_a['href']}
+        try:
+            content = str(response.content, 'gb18030')
+            soup = BeautifulSoup(content, 'html.parser')
+            zip_a = soup.find('a', string='点击打包下载本套图')
+            zip = {'name': zip_a['href'].split('/')[-1], 'href': zip_a['href']}
+        except Exception as e:
+            print(repr(e))
     return zip
 
 
@@ -101,12 +104,13 @@ def download_article(article):
     article_url = article_href[0: -5] + '_{}.html'
     if dowload_zip:
         zip = get_zip(article_href)
-        print('获取到zip包:{}'.format(zip))
-        zip_name = zip['name']
-        zip_href = zip['href']
-        zip_file = path.join(save_dir, zip_name)
-        if not savepath.check_exists(dir_name, article_name, zip_name):
-            dowload(zip_file, zip_href)
+        if zip:
+            print('获取到zip包:{}'.format(zip))
+            zip_name = zip['name']
+            zip_href = zip['href']
+            zip_file = path.join(save_dir, zip_name)
+            if not savepath.check_exists(dir_name, article_name, zip_name):
+                dowload(zip_file, zip_href)
     pics = get_pics(article_href)
     pic_page = 1
     while pics:
