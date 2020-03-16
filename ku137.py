@@ -60,7 +60,7 @@ def get_zip(url):
     zip = None
     response = session.get(url, verify=False, timeout=(3, 3))
     if response.status_code == 200:
-        content = str(response.content, 'gbk')
+        content = str(response.content, 'gb18030')
         soup = BeautifulSoup(content, 'html.parser')
         zip_a = soup.find('a', string='点击打包下载本套图')
         zip = {'name': zip_a['href'].split('/')[-1], 'href': zip_a['href']}
