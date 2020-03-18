@@ -155,6 +155,7 @@ def rename():
             new_name = os.path.join(save_path, real_articl_name)
             if os.path.exists(old_name):
                 os.rename(old_name, new_name)
+                print('{}重命名为{}'.format(old_name, new_name))
         num += 1
         url = article_list_url.format(num)
         articles = get_articles(url)
