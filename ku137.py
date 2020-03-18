@@ -147,12 +147,12 @@ def rename():
     while articles:
         for article in articles:
             s = get_soup(article['href'])
-            real_articl_name = get_real_article_name(s)
+            real_article_name = get_real_article_name(s)
             article_name = article['name'].strip()
             if article_name.endswith('.'):
                 article_name = article_name[:-1]
             old_name = os.path.join(save_path, article_name)
-            new_name = os.path.join(save_path, real_articl_name)
+            new_name = os.path.join(save_path, real_article_name)
             if os.path.exists(old_name):
                 os.rename(old_name, new_name)
                 print('{}重命名为{}'.format(old_name, new_name))
