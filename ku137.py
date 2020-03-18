@@ -70,7 +70,7 @@ def get_zip(url):
     return zip
 
 
-def dowload(file_path, url):
+def download(file_path, url):
     if path.exists(file_path):
         pass
         # print('{}已存在'.format(file_path))
@@ -85,12 +85,12 @@ def dowload(file_path, url):
             print(repr(e))
 
 
-dowload_zip = False
+download_zip = False
 
 
 def download_article(article):
     print(article)
-    global dowload_zip
+    global download_zip
     article_name = article['name'].strip()
     if article_name.endswith('.'):
         article_name = article_name[:-1]
@@ -102,7 +102,7 @@ def download_article(article):
             print(repr(e))
     article_href = article['href']
     article_url = article_href[0: -5] + '_{}.html'
-    if dowload_zip:
+    if download_zip:
         zip = get_zip(article_href)
         if zip:
             print('获取到zip包:{}'.format(zip))
@@ -110,7 +110,7 @@ def download_article(article):
             zip_href = zip['href']
             zip_file = path.join(save_dir, zip_name)
             if not savepath.check_exists(dir_name, article_name, zip_name):
-                dowload(zip_file, zip_href)
+                download(zip_file, zip_href)
     pics = get_pics(article_href)
     pic_page = 1
     while pics:
@@ -119,7 +119,7 @@ def download_article(article):
             pic_href = pic['href']
             pic_file = path.join(save_dir, pic_name)
             if not savepath.check_exists(dir_name, article_name, pic_name):
-                dowload(pic_file, pic_href)
+                download(pic_file, pic_href)
         pic_page += 1
         pics = get_pics(article_url.format(pic_page))
 
