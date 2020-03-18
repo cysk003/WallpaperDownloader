@@ -143,8 +143,7 @@ def download_article(article):
 def rename():
     num = 1
     url = article_list_url.format(num)
-    soup = get_soup(url)
-    articles = get_articles(soup)
+    articles = get_articles(url)
     while articles:
         for article in articles:
             s = get_soup(article['href'])
@@ -175,8 +174,7 @@ if num == 0:
 elif num > 0:
     print("将要从第{}页开始下载！".format(num))
     url = article_list_url.format(num)
-    soup = get_soup(url)
-    articles = get_articles(soup)
+    articles = get_articles(url)
     while articles:
         print("开始下载第{}页".format(num))
         pool = Pool(cpu_count() * 2)
