@@ -69,7 +69,7 @@ python3 filename
 |meitulu.py|美图录|https://www.meitulu.com/|是|
 |meituri.py|美图日|https://www.meituri.com/|是|
 |meizitu.py|妹子图|https://www.mzitu.com|是|
-|mm131.py|mm131|http://www.mm131.com/|否|
+|mm131.py|mm131|http://www.mm131.com/|是|
 |muzitu.py|木子图|https://www.muzishan.com/|是|
 |qihoo360_wallpaper.py|360壁纸||是|
 |walltu.py|哇图网|https://www.walltu.com|是|
