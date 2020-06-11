@@ -1,4 +1,4 @@
-"""美图日"""
+"""图集谷"""
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -13,8 +13,8 @@ session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
 
-base_url = 'https://www.meituri.com'
-dir_name = '美图日'
+base_url = 'https://www.tujigu.com'
+dir_name = '图集谷'
 save_path = save_path = os.path.join(savepath.save_path, dir_name)
 
 

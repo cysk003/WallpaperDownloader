@@ -66,8 +66,8 @@ python3 filename
 |jsmeinv.py|绝色美女|http://www.jsmeinv.com|否|
 |ku137.py|美女写真网|https://www.ku137.net/|是|
 |meitulianmeng.py|美图联盟|https://www.meitulm.com/|是|
-|meitulu.py|美图录|https://www.meitulu.com/|是|
-|meituri.py|美图日|https://www.meituri.com/|是|
+|meitulu.py|美图录|https://www.meitulu.com/|否|
+|tujigu.py|图集谷|https://www.tujigu.com/|是|
 |meizitu.py|妹子图|https://www.mzitu.com|是|
 |mm131.py|mm131|http://www.mm131.com/|是|
 |muzitu.py|木子图|https://www.muzishan.com/|是|
