@@ -6,7 +6,6 @@ import os
 import urllib3
 import savepath
 from multiprocessing import Pool, cpu_count
-import savepath
 
 urllib3.disable_warnings()
 
