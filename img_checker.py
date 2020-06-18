@@ -4,16 +4,30 @@ import os
 import cv2 as cv
 from skimage.metrics import structural_similarity
 
+
 def check_resolution(img_content, width, height):
     img = Image.open(BytesIO(img_content))
     _width, _height = img.size
     return _width >= width and _height >= height
 
 
+def check_rate(img_content, width, height):
+    img = Image.open(BytesIO(img_content))
+    _width, _height = img.size
+    return _width / _height == width / height
+
+
 def check_file_resolution(file_path, width, height):
     img = Image.open(file_path)
     _width, _height = img.size
     return _width >= width and _height >= height
+
+
+def check_file_rate(img_content, width, height):
+    img = Image.open(file_path)
+    _width, _height = img.size
+    return _width / _height == width / height
+
 
 def remove_low_resolution_imgs(path, width, height):
     for pic in os.listdir(path):
@@ -22,6 +36,7 @@ def remove_low_resolution_imgs(path, width, height):
             print('删除{}'.format(pic_path))
             os.remove(pic_path)
 
+
 def img_similarity(path1, path2):
     img1 = cv.imread(path1)
     img2 = cv.imread(path2)
@@ -29,6 +44,7 @@ def img_similarity(path1, path2):
     img_gray2 = cv.cvtColor(cv.resize(img2, (64, 64)), cv.COLOR_BGR2GRAY)
     score = structural_similarity(img_gray1, img_gray2)
     return score
+
 
 if __name__ == "__main__":
     # path = 'D:\\Wallpaper'

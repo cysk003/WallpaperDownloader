@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from os import path
 import os
 import urllib3
+from img_checker import check_resolution
 
 urllib3.disable_warnings()
 
@@ -14,11 +15,14 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'https://wallhaven.cc/'
 download_url = 'https://w.wallhaven.cc/full/{}/{}'
-save_path = '/home/liubodong/图片'
+save_path = '/home/liu/Pictures'
 dir_name = 'wallheaven'
 save_dir = path.join(save_path, dir_name)
+small_save_dir = path.join(save_path, dir_name, 'small')
 if not path.exists(save_dir):
     os.makedirs(save_dir)
+if not path.exists(small_save_dir):
+    os.makedirs(small_save_dir)
 
 save_path = save_path = os.path.join(save_path, dir_name)
 headers = {
@@ -67,17 +71,28 @@ def get_pics(page):
                 pic_url = download_url.format(
                     pic_name[:2], 'wallhaven-' + pic_name)
                 pic_save_path = path.join(save_dir, pic_name)
-                if path.exists(pic_save_path):
+                small_pic_save_path = path.join(small_save_dir, pic_name)
+                if path.exists(pic_save_path) or path.exists(small_pic_save_path):
                     continue
                 else:
                     headers['Referer'] = base_url + \
                         'w' + '/' + pic_name.split('.')[0]
-                    resp = session.get(
-                        pic_url, headers=headers, timeout=(10, 10))
-                    if resp.status_code == 200:
-                        with open(pic_save_path, 'wb+') as f:
-                            f.write(resp.content)
-                            print('下载到[{}]'.format(pic_save_path))
+                    try:
+                        resp = session.get(
+                            pic_url, headers=headers, timeout=(10, 10))
+                        if resp.status_code == 200:
+                            content = resp.content
+                            if not check_resolution(content, 1920, 1080):
+                                pic_save_path = small_pic_save_path
+                            with open(pic_save_path, 'wb+') as f:
+                                f.write(resp.content)
+                                f.flush()
+                                f.close()
+                                print('下载到[{}]'.format(pic_save_path))
+                    except Exception as e:
+                        print(repr(e))
+                        if path.exists(pic_save_path):
+                            os.remove(pic_save_path)
     return num
 
 
