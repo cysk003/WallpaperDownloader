@@ -16,7 +16,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 base_url = 'https://wallhaven.cc/'
 download_url = 'https://w.wallhaven.cc/full/{}/{}'
 save_path = path.join(os.environ['HOME'], 'Pictures')
-dir_name = 'wallheaven'
+dir_name = 'wallhaven'
 save_dir = path.join(save_path, dir_name)
 if not path.exists(save_dir):
     os.makedirs(save_dir)
