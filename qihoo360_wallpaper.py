@@ -107,7 +107,10 @@ class WallpaperDownloader():
                     if create_time < str(self.__ignore_year__) or resolution < '1920x1080':
                         continue
                     pic_id = pic['id']
-                    path = os.path.join(self.__save_path__, str(pic_id) + '_' +
+                    pic_save_path = os.path.join(self.__save_path__, str(pic_id)[:2])
+                    if not os.path.exists:
+                        os.makedirs(pic_save_path)
+                    path = os.path.join(pic_save_path, str(pic_id) + '_' +
                                         create_time.split(' ')[0].replace('-', '_') + '.jpg')
                     if os.path.exists(path):
                         print('[' + path + ']已存在')

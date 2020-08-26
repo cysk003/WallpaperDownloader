@@ -87,9 +87,10 @@ class EnterDesktop():
                         pic_path = os.path.join(
                             path, pic['name'])
                     else:
-                        if not os.path.exists(self.__save_path__):
-                            os.makedirs(self.__save_path__)
-                        pic_path = os.path.join(self.__save_path__, pic['name'])
+                        pic_save_path = os.path.join(self.__save_path__, pic['name'][:2])
+                        if not os.path.exists(pic_save_path):
+                            os.makedirs(pic_save_path)
+                        pic_path = os.path.join(pic_save_path, pic['name'])
                     self.__download__(pic_path, pic['src'], href)
                 else:
                     print('正在停止下载图片')
