@@ -87,7 +87,8 @@ class EnterDesktop():
                         pic_path = os.path.join(
                             path, pic['name'])
                     else:
-                        pic_save_path = os.path.join(self.__save_path__, pic['name'][:2])
+                        pic_save_path = os.path.join(
+                            self.__save_path__, pic['name'][:2])
                         if not os.path.exists(pic_save_path):
                             os.makedirs(pic_save_path)
                         pic_path = os.path.join(pic_save_path, pic['name'])
@@ -165,6 +166,7 @@ class EnterDesktop():
 def main():
     ed = EnterDesktop()
     running = True
+
     def stop(signum, frame):
         global running
         running = False

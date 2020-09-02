@@ -101,3 +101,6 @@ spark-warehouse/
 
 # For SBT
 .jvmopts
+
+# 配置文件
+*.json

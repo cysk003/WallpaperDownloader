@@ -5,6 +5,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from settings import Settings
 from img_checker import check_resolution
+import signal
+import shutil
 
 
 class WallpaperDownloader():
@@ -17,10 +19,12 @@ class WallpaperDownloader():
         self.__session__.mount('http://', HTTPAdapter(max_retries=3))
         self.__session__.mount('https://', HTTPAdapter(max_retries=3))
         self.__category__ = None
+        self.__category_name = None
         self.__running__ = True
 
-    def set_category(self, category):
+    def set_category(self, category, category_name):
         self.__category__ = category
+        self.__category_name = category_name
 
     def set_save_path(self, save_path):
         self.__save_path__ = save_path
@@ -107,8 +111,9 @@ class WallpaperDownloader():
                     if create_time < str(self.__ignore_year__) or resolution < '1920x1080':
                         continue
                     pic_id = pic['id']
-                    pic_save_path = os.path.join(self.__save_path__, str(pic_id)[:2])
-                    if not os.path.exists:
+                    create_year = create_time.split('-')[0]
+                    pic_save_path = os.path.join(self.__save_path__, self.__category_name, create_year)
+                    if not os.path.exists(pic_save_path):
                         os.makedirs(pic_save_path)
                     path = os.path.join(pic_save_path, str(pic_id) + '_' +
                                         create_time.split(' ')[0].replace('-', '_') + '.jpg')
@@ -147,24 +152,35 @@ class WallpaperDownloader():
 
 def main():
     downloader = WallpaperDownloader()
-    cats = downloader.get_categories()
-    num = 1
-    for cat in cats:
-        print('({}) {}'.format(num, cat['name']))
-        num += 1
-    order_str = input('输入序号并回车以下载, 输入"0"以退出:')
-    try:
-        order = int(order_str) - 1
-    except Exception as e:
-        print('无效数字: {}, 请重新运行本程序!'.format(order_str))
-        exit(1)
-    if order <= -1:
-        exit(0)
-    name = cats[order]['name']
-    id = cats[order]['id']
-    print('您选择了{}, ID={}:'.format(name, id))
-    downloader.set_category(id)
-    downloader.run()
+    running = True
+
+    def stop(signum, frame):
+        global running
+        running = False
+        downloader.stop()
+
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
+
+    if running:
+        cats = downloader.get_categories()
+        num = 1
+        for cat in cats:
+            print('({}) {}'.format(num, cat['name']))
+            num += 1
+        order_str = input('输入序号并回车以下载, 输入"0"以退出:')
+        try:
+            order = int(order_str) - 1
+        except Exception as e:
+            print('无效数字: {}, 请重新运行本程序!'.format(order_str))
+            exit(1)
+        if order <= -1:
+            exit(0)
+        name = cats[order]['name']
+        id = cats[order]['id']
+        print('您选择了{}, ID={}:'.format(name, id))
+        downloader.set_category(id, name)
+        downloader.run()
 
 
 if __name__ == '__main__':
