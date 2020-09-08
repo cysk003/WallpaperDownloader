@@ -68,7 +68,10 @@ def get_pics(page, beta=False):
                     pic_name = pic_name.replace('jpg', 'png')
                 pic_url = download_url.format(
                     pic_name[:2], 'wallhaven-' + pic_name)
-                pic_save_path = path.join(save_dir, pic_name)
+                pic_save_dir = path.join(save_dir, pic_name[:2])
+                if not path.exists(pic_save_dir):
+                    os.makedirs(pic_save_dir)
+                pic_save_path = path.join(pic_save_dir, pic_name)
                 if path.exists(pic_save_path):
                     continue
                 else:
