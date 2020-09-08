@@ -52,7 +52,6 @@ def get_pictures(href: str) -> List[str]:
                 hrefs = soup.select(".swiper-wrapper a")
                 if hrefs:
                     return [a['src'].replace('edpic', 'edpic_source') for a in hrefs]
-
     return []
 
 
@@ -63,6 +62,7 @@ def download(pic_type: str, href: str) -> None:
         os.makedirs(pic_save_dir)
     pic_save_path = os.path.join(pic_save_dir, name)
     if os.path.exists(pic_save_path):
+        print("{} already exists!".format(pic_save_path))
         return
     response = session.get(href, timeout=(5, 5))
     if response.status_code == 200:
@@ -81,7 +81,16 @@ if __name__ == "__main__":
         collections: List[str] = get_collections(type_href.format(page))
         while collections:
             for collection in collections:
-                pics = get_pictures(collection)
-                for pic in pics:
-                    download(type_name, pic)
+                try:
+                    pics = get_pictures(collection)
+                    for pic in pics:
+                        try:
+                            download(type_name, pic)
+                        except Exception as e:
+                            print("Exception at download!")
+                            print(repr(e))
+                except Exception as e:
+                    print("Exception at get pictures!")
+                    print(repr(e))
             page += 1
+            collections: List[str] = get_collections(type_href.format(page))
