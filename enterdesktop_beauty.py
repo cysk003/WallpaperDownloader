@@ -1,4 +1,4 @@
-"""回车壁纸下载"""
+"""回车壁纸美女图片下载"""
 from bs4 import BeautifulSoup
 import os
 import requests
