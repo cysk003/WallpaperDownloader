@@ -75,6 +75,7 @@ python3 filename
 |walltu.py|哇图网|https://www.walltu.com|是|
 |yixiu.py|亿秀网|http://www.tu11.com|是|
 |vmgirls|唯美女孩|https://www.vmgirls.com|否|
+|fiveduo|五朵美女|https://www.555duo.net|是|
 
 ### 问题&反馈
    请联系QQ:925023770
