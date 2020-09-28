@@ -73,7 +73,7 @@ def download(path: str, href: str):
         cookies = response.cookies
         with open(path, 'wb+') as f:
             f.write(response.content)
-            print("Download {} to {}".format(href, path)) 
+            print("Download {} to {}".format(href, path))
 
 
 if __name__ == "__main__":
@@ -96,5 +96,8 @@ if __name__ == "__main__":
                 if movie_href:
                     _, suffix = os.path.splitext(movie_href.split('/')[-1])
                     p = os.path.join(save_path, title + suffix)
-                    download(p, movie_href)
+                    if os.path.exists(p):
+                        print("{} already exists")
+                    else:
+                        download(p, movie_href)
         num += 1
