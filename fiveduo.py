@@ -44,8 +44,9 @@ def get_movie_list(index: int):
         soup = BeautifulSoup(content, 'html.parser')
         ul = soup.find('ul', class_='ul2')
         if ul:
-            elements = ul.find_all('a')
-            for element in elements:
+            lis = ul.find_all('li')
+            for li in lis:
+                element = li.find('a')
                 res.append(
                     {'title': element['title'], 'href': element['href']})
     return res
@@ -77,10 +78,6 @@ def download(path: str, href: str):
 
 
 if __name__ == "__main__":
-    # movies = get_movie_list(1)
-    # print(movies)
-    # get_move_href('https://www.555duo.net/a/html/11643.html')
-
     num: int = 1
     while True:
         print("Start download page {}".format(num))
@@ -97,7 +94,7 @@ if __name__ == "__main__":
                     _, suffix = os.path.splitext(movie_href.split('/')[-1])
                     p = os.path.join(save_path, title + suffix)
                     if os.path.exists(p):
-                        print("{} already exists")
+                        print("{} already exists".format(p))
                     else:
                         download(p, movie_href)
         num += 1
