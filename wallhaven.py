@@ -48,9 +48,10 @@ if __name__ == "__main__":
                 os.makedirs(parent_dir)
             pic_response = session.get(pic_url)
             if pic_response.status_code == 200:
-                pic_save_path = os.path.join(parent_dir, pic_id)
+                pic_save_path = os.path.join(
+                    parent_dir, "{}.{}".format(pic_id, pic_url.split(".")[-1]))
                 with open(pic_save_path, "wb+") as f:
                     f.write(pic_response.content)
                     f.flush()
-                    print("Download {} to {}".format(pic_url), pic_save_path)
+                    print("Download {} to {}".format(pic_url, pic_save_path))
         page += 1
