@@ -3,6 +3,7 @@ from requests.adapters import HTTPAdapter
 from os import path
 import os
 import urllib3
+import signal
 
 urllib3.disable_warnings()
 
@@ -18,14 +19,18 @@ if not path.exists(save_dir):
 
 save_path = save_path = os.path.join(save_path, dir_name)
 
+proxies = {
+    'http': '192.168.1.250:4780',
+    'https': '192.168.1.250:4780'
+}
+
 
 def get_pictures(url: str) -> list:
     pic_urls = []
-    response = session.get(url, timeout=(10, 10))
+    response = session.get(url, timeout=(10, 10), proxies=proxies)
     if response.status_code == 200:
         js = response.json(encoding="utf-8")
         for p in js["data"]:
-            print(p)
             pic_urls.append({"id": p["id"], "path": p["path"]})
     else:
         print("Get None, Code: {}".format(response.status_code))
@@ -33,25 +38,39 @@ def get_pictures(url: str) -> list:
 
 
 if __name__ == "__main__":
-    page = 1
-    api_url = "https://wallhaven.cc/api/v1/search?apikey=OmD6tOzHlGge3MQzmxgKTnSBCpBq86gp&categories=111&purity=111&order=desc&sorting=toplist&topRange=1y&atleast=1920x1080&page={}"
-    while True:
-        url = api_url.format(page)
-        pics = get_pictures(url)
-        if not pics:
-            break
-        for pic in pics:
-            pic_id = pic["id"]
-            pic_url = pic["path"]
-            parent_dir = os.path.join(save_path, pic_id[:2])
-            if not os.path.exists(parent_dir):
-                os.makedirs(parent_dir)
-            pic_response = session.get(pic_url)
-            if pic_response.status_code == 200:
-                pic_save_path = os.path.join(
-                    parent_dir, "{}.{}".format(pic_id, pic_url.split(".")[-1]))
-                with open(pic_save_path, "wb+") as f:
-                    f.write(pic_response.content)
-                    f.flush()
-                    print("Download {} to {}".format(pic_url, pic_save_path))
-        page += 1
+
+    running = True
+
+    def stop(signum, stack):
+        print("Received signal: {}, prepare to stop".format(signum))
+        global running
+        running = False
+    
+    signal.signal(signal.SIGINT, stop)
+
+    for top_range in ["1d", "3d", "1w", "1M", "3M", "6M", "1y"]:
+        page = 1
+        api_url = "https://wallhaven.cc/api/v1/search?apikey=OmD6tOzHlGge3MQzmxgKTnSBCpBq86gp&categories=111&purity=111&order=desc&sorting=toplist&topRange={}&atleast=1920x1080&page={}"
+        while running:
+            url = api_url.format(top_range, page)
+            print(url)
+            pics = get_pictures(url)
+            print("Get {} pictures".format(len(pics)))
+            if not pics:
+                break
+            for pic in pics:
+                pic_id = pic["id"]
+                pic_url = pic["path"]
+                parent_dir = os.path.join(save_path, pic_id[:2])
+                if not os.path.exists(parent_dir):
+                    os.makedirs(parent_dir)
+                pic_response = session.get(pic_url, timeout=(10, 10), proxies=proxies)
+                if pic_response.status_code == 200:
+                    pic_save_path = os.path.join(
+                        parent_dir, "{}.{}".format(pic_id, pic_url.split(".")[-1]))
+                    with open(pic_save_path, "wb+") as f:
+                        f.write(pic_response.content)
+                        f.flush()
+                        print("Download {} to {}".format(
+                            pic_url, pic_save_path))
+            page += 1
