@@ -41,8 +41,8 @@ def get_pics(article: dict):
         soup = BeautifulSoup(response.text, 'html.parser')
         div = soup.find('div', class_='nc-light-gallery')
         if div:
-            pics = div.find_all('img', alt=True)
-            res = [pic['data-src'] for pic in pics]
+            pics = div.find_all('a', alt=True)
+            res = ["https:" + pic['href'] for pic in pics]
     return res
 
 
