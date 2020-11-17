@@ -4,10 +4,11 @@ from bs4 import BeautifulSoup
 from os import path
 import os
 import urllib3
-import savepath
 from multiprocessing import Pool, cpu_count
 
 urllib3.disable_warnings()
+
+save_path = path.join(os.environ['HOME'], 'Pictures', 'vmgirls')
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -69,22 +70,23 @@ def get_pic_content(pic_url: str):
     else:
         return None
 
+
 def download(article: dict):
     pics = get_pics(article)
-    dir_name = os.path.join(savepath.save_path, article['title'])
+    dir_name = os.path.join(save_path, article['title'])
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
     if pics:
         for pic in pics:
-            content = get_pic_content(pic)
-            if content:
-                pic_name = pic.split('/')[-1]
-                pic_path = os.path.join(dir_name, pic_name)
-                if not savepath.check_exists(article['title'], pic_name):
+            pic_name = pic.split('/')[-1]
+            pic_path = os.path.join(dir_name, pic_name)
+            if not os.path.exists(pic_path):
+                content = get_pic_content(pic)
+                if content:
                     with open(pic_path, 'wb+') as f:
                         f.write(content)
-
-
+            else:
+                print("{} already exists".format(pic_path))
 
 
 if __name__ == "__main__":
