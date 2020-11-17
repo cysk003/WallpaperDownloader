@@ -40,7 +40,7 @@ def get_movie_list(index: int):
                            cookies=cookies, timeout=(5, 5))
     if response.status_code == 200:
         cookies = response.cookies
-        content = str(response.content, 'gb2312')
+        content = str(response.content, 'GB18030')
         soup = BeautifulSoup(content, 'html.parser')
         ul = soup.find('ul', class_='ul2')
         if ul:
