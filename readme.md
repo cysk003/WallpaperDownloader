@@ -65,16 +65,16 @@ python3 filename
 |ilemiss.py|艾乐美女|https://www.ilemiss.net/|否|
 |jsmeinv.py|绝色美女|http://www.jsmeinv.com|否|
 |ku137.py|美女写真网|https://www.ku137.net/|是|
-|meitulianmeng.py|美图联盟|https://www.meitulm.com/|是|
+|meitulianmeng.py|美图联盟|https://www.meitulm.com/|否|
 |meitulu.py|美图录|https://www.meitulu.com/|否|
 |tujigu.py|图集谷|https://www.tujigu.com/|是|
-|meizitu.py|妹子图|https://www.mzitu.com|是|
-|mm131.py|mm131|http://www.mm131.com/|是|
-|muzitu.py|木子图|https://www.muzishan.com/|是|
+|meizitu.py|妹子图|https://www.mzitu.com|否|
+|mm131.py|mm131|http://www.mm131.com/|否|
+|muzitu.py|木子图|https://www.muzishan.com/|否|
 |qihoo360_wallpaper.py|360壁纸||是|
 |walltu.py|哇图网|https://www.walltu.com|是|
-|yixiu.py|亿秀网|http://www.tu11.com|是|
-|vmgirls|唯美女孩|https://www.vmgirls.com|否|
+|yixiu.py|亿秀网|http://www.tu11.com|否|
+|vmgirls|唯美女孩|https://www.vmgirls.com|是|
 |fiveduo|五朵美女|https://www.555duo.net|是|
 
 ### 问题&反馈
