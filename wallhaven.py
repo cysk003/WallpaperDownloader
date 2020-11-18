@@ -4,6 +4,7 @@ from os import path
 import os
 import urllib3
 import signal
+import time
 
 urllib3.disable_warnings()
 
@@ -71,3 +72,4 @@ if __name__ == "__main__":
                         print("Download {} to {}".format(
                             pic_url, pic_save_path))
             page += 1
+            time.sleep(3)
