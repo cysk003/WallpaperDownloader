@@ -43,7 +43,8 @@ if __name__ == "__main__":
 
     signal.signal(signal.SIGINT, stop)
 
-    for top_range in ["1d", "3d", "1w", "1M", "3M", "6M", "1y"]:
+    # "1d", "3d", "1w", "1M", "3M", "6M", "1y"
+    for top_range in ["1y", "6M", "3M", "1M", "1w", "3d", "1d"]:
         page = 1
         api_url = "https://wallhaven.cc/api/v1/search?apikey=OmD6tOzHlGge3MQzmxgKTnSBCpBq86gp&categories=111&purity=111&order=desc&sorting=toplist&topRange={}&atleast=1920x1080&page={}"
         while running:
@@ -72,4 +73,4 @@ if __name__ == "__main__":
                         print("Download {} to {}".format(
                             pic_url, pic_save_path))
             page += 1
-            time.sleep(3)
+            time.sleep(2)
