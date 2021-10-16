@@ -1,6 +1,6 @@
 import os
 
-save_path = '/media/liubodong/HDD1T'
+save_path = '/var/run/media/liubodong/HDD1T'
 check_exists_path = []  # ['/mnt/HDD2', '/mnt/HDD3', '/mnt/HDD4']
 
 

@@ -24,7 +24,7 @@ def get_pictures(url: str) -> list:
     pic_urls = []
     response = session.get(url, timeout=(10, 10))
     if response.status_code == 200:
-        js = response.json(encoding="utf-8")
+        js = response.json()
         for p in js["data"]:
             pic_urls.append({"id": p["id"], "path": p["path"]})
     else:

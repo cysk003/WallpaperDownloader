@@ -18,7 +18,7 @@ class Settings:
         if os.path.exists(self.__path__):
             with open(self.__path__, 'rb+') as f:
                 content = f.read()
-                return json.loads(content, encoding='utf-8')
+                return json.loads(content)
         else:
             return {}
 
