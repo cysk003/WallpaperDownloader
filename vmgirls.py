@@ -1,9 +1,9 @@
+import os
 import requests
-from requests.adapters import HTTPAdapter
+import urllib3
 from bs4 import BeautifulSoup
 from os import path
-import os
-import urllib3
+from requests.adapters import HTTPAdapter
 
 urllib3.disable_warnings()
 

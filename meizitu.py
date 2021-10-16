@@ -1,9 +1,10 @@
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
 import os.path
-import savepath
+import requests
+from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
+from requests.adapters import HTTPAdapter
+
+import savepath
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -42,8 +43,8 @@ def get_catagories():
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0'
     }
     uls = parse_url(all_url, headers=headers, cookies=cookies).find_all('ul', class_='archives') + \
-        parse_url(old_url, headers=headers, cookies=cookies).find_all(
-            'ul', class_='archives')
+          parse_url(old_url, headers=headers, cookies=cookies).find_all(
+              'ul', class_='archives')
     a_links = [ul.find_all('a', target='_blank') for ul in uls]
     links = []
     for x in a_links:
@@ -111,4 +112,3 @@ def get_pics(href):
 catas = get_catagories()
 for cat in catas:
     get_pics(cat)
-

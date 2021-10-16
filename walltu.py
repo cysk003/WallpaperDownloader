@@ -1,15 +1,15 @@
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
-from os import path
 import os
-import savepath
+import requests
+from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
+from os import path
+from requests.adapters import HTTPAdapter
+
+import savepath
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
-
 
 base_url = 'https://www.walltu.com'
 cat_url = base_url + '/mn'

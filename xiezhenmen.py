@@ -1,12 +1,14 @@
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
-from os import path
 import os
-import urllib3
-import savepath
-from multiprocessing import Pool, cpu_count
+import requests
 import sys
+import urllib3
+from bs4 import BeautifulSoup
+from multiprocessing import Pool, cpu_count
+from os import path
+from requests.adapters import HTTPAdapter
+
+import savepath
+
 sys.setrecursionlimit(100000)
 
 urllib3.disable_warnings()

@@ -1,7 +1,7 @@
+import cv2 as cv
+import os
 from PIL import Image
 from io import BytesIO
-import os
-import cv2 as cv
 from skimage.metrics import structural_similarity
 
 

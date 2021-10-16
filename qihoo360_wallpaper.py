@@ -1,12 +1,12 @@
 import os
-import urllib.parse as parser
-
 import requests
-from requests.adapters import HTTPAdapter
-from settings import Settings
-from img_checker import check_resolution
-import signal
 import shutil
+import signal
+import urllib.parse as parser
+from requests.adapters import HTTPAdapter
+
+from img_checker import check_resolution
+from settings import Settings
 
 
 class WallpaperDownloader():

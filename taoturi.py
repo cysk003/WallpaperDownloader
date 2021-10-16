@@ -1,18 +1,18 @@
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
-from os import path
 import os
+import requests
 import urllib3
-import savepath
+from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
+from os import path
+from requests.adapters import HTTPAdapter
+
+import savepath
 
 urllib3.disable_warnings()
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
-
 
 base_url = 'https://www.taoturi.com/'
 dir_name = 'taoturi'

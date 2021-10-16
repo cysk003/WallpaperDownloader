@@ -1,15 +1,17 @@
 # https://www.muzishan.com
 # http://www.mmmjpg.com/
 
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
-from os import path
 import os
-import urllib3
-import savepath
-from multiprocessing import Pool, cpu_count
+import requests
 import sys
+import urllib3
+from bs4 import BeautifulSoup
+from multiprocessing import Pool, cpu_count
+from os import path
+from requests.adapters import HTTPAdapter
+
+import savepath
+
 sys.setrecursionlimit(100000)
 
 urllib3.disable_warnings()
@@ -17,7 +19,6 @@ urllib3.disable_warnings()
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
-
 
 base_url = 'https://www.muzishan.com'
 dowload_url = 'https://i.muzishan.com'
@@ -67,10 +68,11 @@ def download_article(article):
     num = 1
     pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
     try:
-        response = session.get(pic_href,  verify=False, timeout=(3, 3))
+        response = session.get(pic_href, verify=False, timeout=(3, 3))
         while response.status_code == 200:
             save_file = path.join(save_dir, str(num) + '.jpg')
-            if not path.exists(save_file) and not savepath.check_exists(dir_name, escape(article_name), str(num) + '.jpg'):
+            if not path.exists(save_file) and not savepath.check_exists(dir_name, escape(article_name),
+                                                                        str(num) + '.jpg'):
                 with open(save_file, 'wb+') as f:
                     f.write(response.content)
                     print('下载到' + save_file)
@@ -78,7 +80,7 @@ def download_article(article):
                 print(save_file + '已存在')
             num += 1
             pic_href = dowload_url + '/' + article_id + '/' + str(num) + '.jpg'
-            response = session.get(pic_href,  verify=False, timeout=(3, 3))
+            response = session.get(pic_href, verify=False, timeout=(3, 3))
     except Exception as e:
         print(repr(e))
 

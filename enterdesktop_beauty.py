@@ -1,13 +1,14 @@
 """回车壁纸美女图片下载"""
-from bs4 import BeautifulSoup
+import logging
 import os
 import requests
-from requests.adapters import HTTPAdapter
-import logging
 import signal
-from settings import Settings
+from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
+from requests.adapters import HTTPAdapter
+
 from img_checker import check_resolution
+from settings import Settings
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -171,6 +172,7 @@ def main():
         global running
         running = False
         ed.stop()
+
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
     types = ed.__settings__.get_setting('types')

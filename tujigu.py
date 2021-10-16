@@ -1,12 +1,14 @@
 """图集谷"""
 
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
 import os.path
-import savepath
-from multiprocessing import Pool, cpu_count
+import requests
 import sys
+from bs4 import BeautifulSoup
+from multiprocessing import Pool, cpu_count
+from requests.adapters import HTTPAdapter
+
+import savepath
+
 sys.setrecursionlimit(1000000)
 
 session = requests.Session()
@@ -46,7 +48,7 @@ def d_collection(collection):
     for num in range(1, count + 1):
         img_save_path = os.path.join(path, str(num) + '.jpg')
         if os.path.exists(img_save_path) or savepath.check_exists(dir_name, tittle, str(num) + '.jpg'):
-            print('['+img_save_path + ']已存在')
+            print('[' + img_save_path + ']已存在')
             continue
         url = prefix + '/' + str(num) + '.jpg'
         try:

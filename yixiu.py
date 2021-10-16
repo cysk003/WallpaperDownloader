@@ -1,10 +1,11 @@
 """亿秀网"""
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
 import os.path
-import savepath
+import requests
+from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
+from requests.adapters import HTTPAdapter
+
+import savepath
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -93,8 +94,9 @@ def download_collection(collection):
         if savepath.check_exists(dir_name, title, str(num2) + '.jpg'):
             get_pic_res = True
         else:
-            get_pic_res = download(img_url + '/' + str(num2) + '.jpg', os.path.join(save_path, title, str(num2) + '.jpg'),
-                               headers)
+            get_pic_res = download(img_url + '/' + str(num2) + '.jpg',
+                                   os.path.join(save_path, title, str(num2) + '.jpg'),
+                                   headers)
         if not get_pic_res:
             break
         num2 += 1

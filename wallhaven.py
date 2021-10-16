@@ -1,10 +1,10 @@
-import requests
-from requests.adapters import HTTPAdapter
-from os import path
 import os
-import urllib3
+import requests
 import signal
 import time
+import urllib3
+from os import path
+from requests.adapters import HTTPAdapter
 
 urllib3.disable_warnings()
 
@@ -19,6 +19,7 @@ if not path.exists(save_dir):
     os.makedirs(save_dir)
 
 save_path = save_path = os.path.join(save_path, dir_name)
+
 
 def get_pictures(url: str) -> list:
     pic_urls = []
@@ -36,10 +37,12 @@ if __name__ == "__main__":
 
     running = True
 
+
     def stop(signum, stack):
         print("Received signal: {}, prepare to stop".format(signum))
         global running
         running = False
+
 
     signal.signal(signal.SIGINT, stop)
 

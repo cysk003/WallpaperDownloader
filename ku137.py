@@ -1,18 +1,18 @@
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
-from os import path
 import os
+import requests
 import urllib3
-import savepath
+from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
+from os import path
+from requests.adapters import HTTPAdapter
+
+import savepath
 
 urllib3.disable_warnings()
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
-
 
 base_url = 'https://www.ku137.net/'
 article_list_url = base_url + 'b/1/list_1_{}.html'
@@ -105,7 +105,7 @@ def download_article(article):
     soup = get_soup(article_href)
     real_articl_name = get_real_article_name(soup)
     if real_articl_name:
-        article_name = real_articl_name 
+        article_name = real_articl_name
     else:
         article_name = article['name'].strip()
         if article_name.endswith('.'):

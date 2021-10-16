@@ -1,11 +1,13 @@
 """美图录"""
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
 import os.path
-import savepath
-from multiprocessing import Pool, cpu_count
+import requests
 import sys
+from bs4 import BeautifulSoup
+from multiprocessing import Pool, cpu_count
+from requests.adapters import HTTPAdapter
+
+import savepath
+
 sys.setrecursionlimit(100000)
 
 session = requests.Session()
@@ -44,7 +46,7 @@ def download_collection(c):
             continue
         content = None
         try:
-            content = session.get(prefix+'/'+str(n) +
+            content = session.get(prefix + '/' + str(n) +
                                   '.jpg', timeout=3, headers=headers).content
         except Exception as e:
             print(repr(e))
@@ -79,6 +81,6 @@ if __name__ == "__main__":
         url_category = base_url + cat + '/'
         for num in range(1, get_total_collections(url_category) + 1):
             url = url_category + str(num) + \
-                '.html' if num != 1 else url_category
+                  '.html' if num != 1 else url_category
             download_collections(url)
         pass

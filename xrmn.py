@@ -1,11 +1,11 @@
-import re
-import sys
-from this import d
-from matplotlib.pyplot import style, text
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
 import os
+import re
+import requests
+import sys
+from bs4 import BeautifulSoup
+from matplotlib.pyplot import style, text
+from requests.adapters import HTTPAdapter
+from this import d
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
@@ -29,7 +29,7 @@ def get_all_modules() -> list[dict]:
     for module_li in soup.select('ul.sub-menu > li > a'):
         res.append(
             {'module_href': base_url +
-                module_li['href'], 'module_title': module_li['title']}
+                            module_li['href'], 'module_title': module_li['title']}
         )
     return res
 
@@ -56,7 +56,7 @@ def get_articles(article_index: str) -> list[dict]:
         'ul', class_='update_area_lists cl').find_all('a')
     for a in article_list_soup:
         res.append({'article_title': a['title'],
-                   'article_href': base_url + a['href']})
+                    'article_href': base_url + a['href']})
     return res
 
 
@@ -117,7 +117,7 @@ for module in modules:
             article_NO = ''.join(re.findall(r'([NnOoVvLl]+\.[0-9]+)', article_title))
             if article_NO:
                 no = ''.join(re.findall(r'[0-9]+', article_NO))
-                arr:list[str] = ku137_articles[module_en]
+                arr: list[str] = ku137_articles[module_en]
                 if arr and no in arr:
                     print(article_title + " already exists in ku137")
                     continue

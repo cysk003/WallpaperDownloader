@@ -1,18 +1,18 @@
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
-from os import path
 import os
+import requests
 import urllib3
-import savepath
+from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
+from os import path
+from requests.adapters import HTTPAdapter
+
+import savepath
 
 urllib3.disable_warnings()
 
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
-
 
 base_url = 'https://www.ilemiss.net/'
 dir_name = 'ilemiss'
@@ -97,7 +97,7 @@ def download_article(article):
     for article_page in range(1, article_pages + 1):
         if article_page != 1:
             article_href = article_href_head + \
-                '_' + str(article_page) + '.html'
+                           '_' + str(article_page) + '.html'
         pic = get_pic(article_href)
         if pic:
             save_file = path.join(save_dir, pic['name'])

@@ -1,6 +1,6 @@
-from datetime import date
 import requests
 from bs4 import BeautifulSoup
+from datetime import date
 
 base_url = "http://28th.cc/"
 main_url = base_url + 'forum-181-{}.html'
@@ -8,17 +8,20 @@ main_url = base_url + 'forum-181-{}.html'
 conf_path = 'thz.date'
 last_date = ''
 
+
 def update_date() -> None:
     with open(conf_path, 'w+') as f:
         f.write(last_date)
         f.flush()
         f.close()
 
+
 def get_last_date() -> str:
     with open(conf_path, 'r') as f:
         last_date = f.readline()
         f.close()
         return last_date
+
 
 last_date = get_last_date()
 if not last_date:
@@ -61,5 +64,3 @@ while running:
 last_date = last_article_date
 print('last_date updated to ' + last_date)
 update_date()
-    
-

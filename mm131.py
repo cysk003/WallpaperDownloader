@@ -1,8 +1,9 @@
 """mm131"""
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
 import os.path
+import requests
+from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+
 import savepath
 
 session = requests.Session()
@@ -11,6 +12,7 @@ session.mount('https://', HTTPAdapter(max_retries=3))
 
 base_url = 'http://www.mm131.com/'
 save_path = save_path = os.path.join(savepath.save_path, 'mm131')
+
 
 def get_link(x):
     return x.find_all('a')[0]['href'], x.find_all('img')[0]['alt']
@@ -137,5 +139,5 @@ def start(read_url_category):
 
 
 for cate in ['xinggan', 'qingchun', 'xiaohua', 'chemo', 'qipao']:
-    url_category = base_url + cate + '/'  
+    url_category = base_url + cate + '/'
     start(url_category)

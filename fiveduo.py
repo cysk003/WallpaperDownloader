@@ -1,9 +1,10 @@
+import os
 import requests
-from requests.adapters import HTTPAdapter
+import urllib3
 from bs4 import BeautifulSoup
 from os import path
-import os
-import urllib3
+from requests.adapters import HTTPAdapter
+
 import savepath
 
 urllib3.disable_warnings()
@@ -11,7 +12,6 @@ urllib3.disable_warnings()
 session = requests.Session()
 session.mount('http://', HTTPAdapter(max_retries=3))
 session.mount('https://', HTTPAdapter(max_retries=3))
-
 
 base_url = 'https://www.555duo.net'
 dir_name = '555duo'

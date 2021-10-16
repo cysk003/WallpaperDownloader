@@ -1,8 +1,9 @@
 """2717"""
-import requests
-from requests.adapters import HTTPAdapter
-from bs4 import BeautifulSoup
 import os.path
+import requests
+from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+
 import savepath
 
 session = requests.Session()
@@ -57,7 +58,9 @@ while True:
                 print(img_save_path + '已存在')
                 href_num += 1
                 try:
-                    soup2 = BeautifulSoup(str(session.get(href_base + '_' + str(href_num) + '.html', timeout=3).content, 'gbk'),'html.parser')
+                    soup2 = BeautifulSoup(
+                        str(session.get(href_base + '_' + str(href_num) + '.html', timeout=3).content, 'gbk'),
+                        'html.parser')
                 except Exception as e:
                     print(repr(e))
                     continue

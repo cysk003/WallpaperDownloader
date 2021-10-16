@@ -1,13 +1,14 @@
 """回车壁纸美女图片下载"""
-from bs4 import BeautifulSoup
+import json
+import logging
 import os
 import requests
-from requests.adapters import HTTPAdapter
-import logging
 import signal
-import json
-from typing import List
+from bs4 import BeautifulSoup
 from multiprocessing import Pool, cpu_count
+from requests.adapters import HTTPAdapter
+from typing import List
+
 from img_checker import check_resolution
 
 base_url = "https://www.enterdesk.com"
